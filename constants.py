@@ -1,0 +1,30 @@
+CAPTION = 'Platformer'
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.7)
+FPS = 60
+
+# Game Variables
+GRAVITY = 0.75
+WALK_SPEED = 3
+JUMP_GRAVITY = 1
+JUMP_VEL = -11
+
+# Action Index
+IDLE_IDX = 0
+RUN_IDX = 1
+DEAD_IDX = 2
+HURT_IDX = 3
+ATTACK_IDX = 4
+JUMP_IDX = 5
+
+# Animation Cooldowns
+IDLE_COOL = 200
+RUN_COOL = 100
+DEAD_COOL = 400
+HURT_COOL = 200
+ATTACK_COOL = 200
+JUMP_COOL = 0
+
+# Colours
+BLACK = (0, 0, 0)

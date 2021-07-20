@@ -13,8 +13,8 @@ class Player(pygame.sprite.Sprite):
         self.load_images()
 
         # animations
-        self.cooldowns = [c.IDLE_COOL, c.RUN_COOL, c.DEAD_COOL, c.HURT_COOL,
-                          c.ATTACK_COOL, c.JUMP_COOL]
+        self.cooldowns = [c.IDLE_ANI, c.RUN_ANI, c.DEAD_ANI, c.HURT_ANI,
+                          c.ATTACK_ANI, c.JUMP_ANI]
         self.current_time = pygame.time.get_ticks()
         self.frame_index = 0
         self.action_index = c.IDLE_IDX
@@ -33,21 +33,23 @@ class Player(pygame.sprite.Sprite):
         self.jump_vel = c.JUMP_VEL
         self.gravity = c.GRAVITY
 
+        self.attack = False
+
     def load_images(self):
         # add frames to animation list
-        frame_list = ['idle', 'run', 'dead', 'hurt', 'attack']
-        for animation in frame_list:
+        frame_type = ['idle', 'run', 'dead', 'hurt', 'attack']
+        for animation in frame_type:
             tmp_list = []
-            num_frames = len(os.listdir(f'player_frames/{animation}'))
+            num_frames = len(os.listdir(f'player_frames/player_{animation}'))
             for i in range(1, num_frames):
-                fn = f'player_frames/{animation}/{animation}-{i}.png'
+                fn = f'player_frames/player_{animation}/{animation}-{i}.png'
                 img = pygame.transform.scale2x(pygame.image.load(fn).convert())
                 tmp_list.append(img)
 
             self.animation_list.append(tmp_list)
 
         # jumping only has one frame
-        jmp = f'player_frames/jump.png'
+        jmp = f'player_frames/player_jump.png'
         img = pygame.transform.scale2x(pygame.image.load(jmp).convert())
         self.animation_list.append([img])
 
@@ -57,10 +59,11 @@ class Player(pygame.sprite.Sprite):
             self.update_action(c.JUMP_IDX)
         elif self.move_left or self.move_right:
             self.update_action(c.RUN_IDX)
+        elif self.attack:
+            self.update_action(c.ATTACK_IDX)
 
         else:
             self.update_action(c.IDLE_IDX)
-
 
         self.move()
         self.draw(screen)
@@ -71,21 +74,6 @@ class Player(pygame.sprite.Sprite):
             self.action_index = new_action_idx
             self.frame_index = 0
             self.current_time = pygame.time.get_ticks()
-
-    def action(self):
-        # gravity
-        self.vel_y += self.gravity
-        if self.rect.bottom + self.vel_y > 400:
-            self.jump = False
-            self.can_jump = True
-            self.vel_y = 400 - self.rect.bottom
-        # else:
-        self.rect.y += self.gravity
-
-        if self.action_index == c.RUN_IDX:
-            self.running()
-        elif self.action_index == c.JUMP_IDX:
-            self.jumping()
 
     def move(self):
         # reset movement variables
@@ -122,38 +110,20 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
-    def running(self):
-        dx = 0
-        if self.move_left:
-            dx = -self.speed
-            self.flip = True
-            self.direction = -1
-
-        if self.move_right:
-            dx = self.speed
-            self.flip = False
-            self.direction = 1
-
-        self.rect.x += dx
-
-    def jumping(self):
-        dy = 0
-        if self.jump:
-            dy += self.jump_vel
-
-            self.can_jump = False
-
-        self.rect.y += self.vel_y
-
     def animate(self):
+        # increment frame index based on action's cooldown
         self.image = self.animation_list[self.action_index][self.frame_index]
         if (pygame.time.get_ticks() - self.current_time) > \
                 self.cooldowns[self.action_index]:
             self.current_time = pygame.time.get_ticks()
             self.frame_index += 1
 
+        # reset frame index
         if self.frame_index >= len(self.animation_list[self.action_index]):
             self.frame_index = 0
+            # only play player_attack animation once per key pressed
+            if self.attack:
+                self.attack = False
 
     def draw(self, surf):
         img = pygame.transform.flip(self.image, self.flip, False)

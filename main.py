@@ -2,6 +2,7 @@ import pygame
 import sys
 import constants as c
 from classes import player_class
+from classes import  enemy_class
 
 pygame.init()
 
@@ -12,6 +13,7 @@ pygame.display.set_caption(c.CAPTION)
 clock = pygame.time.Clock()
 
 player = player_class.Player()
+slime01 = enemy_class.Slime01()
 
 while True:
     for event in pygame.event.get():
@@ -31,6 +33,8 @@ while True:
             if event.key == pygame.K_w and not player.in_air:
                 player.jump = True
                 player.vel_y = 0
+            if event.key == pygame.K_SPACE:
+                player.attack = True
 
         # unpress key
         if event.type == pygame.KEYUP:
@@ -42,7 +46,9 @@ while True:
     screen.fill(c.BLACK)
 
     if player.alive:
+        slime01.draw(screen)
         player.update_player(screen)
+
 
     pygame.display.update()
     clock.tick(c.FPS)

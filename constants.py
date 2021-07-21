@@ -26,6 +26,3 @@ HURT_ANI = 200
 ATTACK_ANI = 200
 JUMP_ANI = 0
 
-# Colours
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)

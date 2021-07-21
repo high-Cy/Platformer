@@ -35,6 +35,8 @@ class Player(pygame.sprite.Sprite):
 
         self.attack = False
 
+        self.hitbox = (self.rect.x + 11, self.rect.y +15, 29, 39)
+
     def load_images(self):
         # add frames to animation list
         frame_type = ['idle', 'run', 'dead', 'hurt', 'attack']
@@ -128,3 +130,10 @@ class Player(pygame.sprite.Sprite):
     def draw(self, surf):
         img = pygame.transform.flip(self.image, self.flip, False)
         surf.blit(img, self.rect)
+
+        # adjust hitbox
+        if self.flip:
+            self.hitbox = (self.rect.x + 22, self.rect.y + 15, 29, 39)
+        else:
+            self.hitbox = (self.rect.x + 11, self.rect.y + 15, 29, 39)
+        pygame.draw.rect(surf, 'red', self.hitbox, 1)

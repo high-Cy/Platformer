@@ -25,6 +25,8 @@ class Slime01(Enemy):
         self.image = self.animation_list[0][self.frame_index]
         self.rect = self.image.get_rect(center=(300, 375))
 
+        self.hitbox = (self.rect.x + 2, self.rect.y + 7, 30, 20)
+
     def load_images(self):
         frame_type = ['idle', 'move', 'hurt', 'die']
         for animation in frame_type:
@@ -36,4 +38,15 @@ class Slime01(Enemy):
                 tmp_list.append(img)
 
             self.animation_list.append(tmp_list)
+
+    def draw(self, surf):
+        img = pygame.transform.flip(self.image, self.flip, False)
+        surf.blit(img, self.rect)
+
+        # adjust hitbox
+        if self.flip:
+            self.hitbox = (self.rect.x + 2, self.rect.y + 7, 30, 20)
+        else:
+            self.hitbox = (self.rect.x + 2, self.rect.y + 7, 30, 20)
+        pygame.draw.rect(surf, 'red', self.hitbox, 1)
 

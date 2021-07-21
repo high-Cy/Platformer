@@ -3,6 +3,7 @@ import sys
 import constants as c
 from classes import player_class
 from classes import  enemy_class
+from classes import sword_class
 
 pygame.init()
 
@@ -14,6 +15,7 @@ clock = pygame.time.Clock()
 
 player = player_class.Player()
 slime01 = enemy_class.Slime01()
+sword = sword_class.Sword(player.rect.x, player.rect.y, player.flip)
 
 while True:
     for event in pygame.event.get():
@@ -43,11 +45,14 @@ while True:
             if event.key == pygame.K_d:
                 player.move_right = False
 
-    screen.fill(c.BLACK)
+    screen.fill('black')
 
     if player.alive:
-        slime01.draw(screen)
         player.update_player(screen)
+
+        slime01.draw(screen)
+        if player.attack:
+            sword.draw(screen, player.rect.x, player.rect.y, player.flip)
 
 
     pygame.display.update()

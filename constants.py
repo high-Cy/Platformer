@@ -23,6 +23,9 @@ IDLE_ANI = 200
 RUN_ANI = 100
 DEAD_ANI = 400
 HURT_ANI = 200
-ATTACK_ANI = 200
+ATTACK_ANI = 100
 JUMP_ANI = 0
 
+# Timers
+KILL_TIMER = 300  # kill sprite
+HURT_TIMER = 1000  # 1 second of invisibility after hurt

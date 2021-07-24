@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.frame_index = 0
         self.action_index = c.IDLE_IDX
         self.image = self.animation_list[self.action_index][self.frame_index]
-        self.rect = self.image.get_rect(center=(100, 400))
+        self.rect = self.image.get_rect(center=(100, 100))
         self.flip = False
         self.direction = 1
 
@@ -42,16 +42,16 @@ class Player(pygame.sprite.Sprite):
         frame_type = ['idle', 'run', 'dead', 'hurt', 'attack']
         for animation in frame_type:
             tmp_list = []
-            num_frames = len(os.listdir(f'player_frames/player_{animation}'))
+            num_frames = len(os.listdir(f'player/player_{animation}'))
             for i in range(1, num_frames):
-                fn = f'player_frames/player_{animation}/{animation}-{i}.png'
+                fn = f'player/player_{animation}/{animation}-{i}.png'
                 img = pygame.transform.scale2x(pygame.image.load(fn).convert())
                 tmp_list.append(img)
 
             self.animation_list.append(tmp_list)
 
         # jumping only has one frame
-        jmp = f'player_frames/player_jump.png'
+        jmp = f'player/player_jump.png'
         img = pygame.transform.scale2x(pygame.image.load(jmp).convert())
         self.animation_list.append([img])
 
@@ -124,7 +124,7 @@ class Player(pygame.sprite.Sprite):
         if self.frame_index >= len(self.animation_list[self.action_index]):
             self.frame_index = 0
             # only play player_attack animation once per key pressed
-            if self.attack:
+            if self.action_index == c.ATTACK_IDX:
                 self.attack = False
 
     def draw(self, surf):

@@ -12,8 +12,8 @@ class Sword(pygame.sprite.Sprite):
         self.collided = False
         self.hitbox = pygame.Rect(x + 39, y + 33, 26, 18)
 
-    def update(self, group,  screen, x, y, flip):
-        if not self.collided:
+    def update(self, group,  screen, x, y, flip, attack_frame):
+        if not self.collided and attack_frame >= 2:
             self.check_collision(group)
 
         self.draw(screen, x, y, flip)

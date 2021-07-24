@@ -4,6 +4,7 @@ import constants as c
 from classes import player_class
 from classes import  enemy_class
 from classes import sword_class
+from classes import  item_class
 
 pygame.init()
 
@@ -20,6 +21,10 @@ slime01 = enemy_class.Slime01(300, 375)
 slime2 = enemy_class.Slime01(500, 375)
 enemy_group = pygame.sprite.Group()
 enemy_group.add(slime01, slime2)
+
+item_group = pygame.sprite.Group()
+item = item_class.Item(c.COIN1, 200, 375)
+item_group.add(item)
 
 while True:
     for event in pygame.event.get():
@@ -55,12 +60,15 @@ while True:
 
     enemy_group.update(screen)
 
+    item_group.update(screen, player)
+
+
     if player.alive:
         player.update_player(screen)
 
         # attack
-        if player.attack and not player.move_left and not player.move_right:
-            sword.update(enemy_group, screen, player.rect.x, player.rect.y, player.flip)
+        if player.attack and not player.move_left and not player.move_right and not player.in_air:
+            sword.update(enemy_group, screen, player.rect.x, player.rect.y, player.flip, player.frame_index)
 
         else:
             player.attack = False

@@ -29,3 +29,12 @@ JUMP_ANI = 0
 # Timers
 KILL_TIMER = 300  # kill sprite
 HURT_TIMER = 1000  # 1 second of invisibility after hurt
+
+# Items
+HEALTH = 'Health'
+DOUBJUMP = 'Doub_Jump'
+APPLE = 'Apple'
+COIN1 = 'Coin1'
+COIN2 = 'Coin2'
+COIN3 = 'Coin3'
+KEY = 'Key'

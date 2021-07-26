@@ -35,7 +35,12 @@ class Player(pygame.sprite.Sprite):
 
         self.attack = False
 
-        self.hitbox = (self.rect.x + 11, self.rect.y +15, 29, 39)
+        self.hitbox = pygame.Rect(self.rect.x + 11, self.rect.y + 15, 29, 39)
+
+        self.health = 3
+        self.max_health = self.health
+        self.collided = False
+        self.hurt_timer = None
 
     def load_images(self):
         # add frames to animation list
@@ -55,27 +60,53 @@ class Player(pygame.sprite.Sprite):
         img = pygame.transform.scale2x(pygame.image.load(jmp).convert())
         self.animation_list.append([img])
 
-    def update_player(self, screen):
-        # update action
-        if self.in_air:
-            self.update_action(c.JUMP_IDX)
-        elif self.move_left or self.move_right:
-            self.update_action(c.RUN_IDX)
-        elif self.attack:
-            self.update_action(c.ATTACK_IDX)
+    def update(self, screen, enemy_group):
+        # update action when not hurt
+        if self.action_index != c.HURT_IDX:
+            if self.in_air:
+                self.update_action(c.JUMP_IDX)
+            elif self.move_left or self.move_right:
+                self.update_action(c.RUN_IDX)
+            elif self.attack:
+                self.update_action(c.ATTACK_IDX)
+            elif not self.alive:
+                self.update_action(c.DEAD_IDX)
 
-        else:
-            self.update_action(c.IDLE_IDX)
+            else:
+                self.update_action(c.IDLE_IDX)
+            # can't move if hurt
+            self.move()
 
-        self.move()
-        self.draw(screen)
+        # Grants n amount of time of invincibility after hurt
+        if self.hurt_timer and (
+                pygame.time.get_ticks() - self.hurt_timer) >= c.HURT_TIMER:
+            self.hurt_timer = None
+            self.collided = False
+
+        if self.alive:
+            self.check_collision(enemy_group)
         self.animate()
+        self.draw(screen)
 
     def update_action(self, new_action_idx):
         if new_action_idx != self.action_index:
             self.action_index = new_action_idx
             self.frame_index = 0
             self.current_time = pygame.time.get_ticks()
+
+    def check_collision(self, enemy_group):
+        for enemy in enemy_group:
+            if pygame.Rect.colliderect(self.hitbox, enemy.hitbox):
+                # ensure only counts 1 collision
+                if enemy.alive and not self.collided:
+                    self.update_action(c.HURT_IDX)
+                    self.collided = True
+                    self.health -= 1
+                    self.hurt_timer = pygame.time.get_ticks()
+
+                if self.health <= 0:
+                    self.health = 0
+                    self.alive = False
 
     def move(self):
         # reset movement variables
@@ -126,6 +157,11 @@ class Player(pygame.sprite.Sprite):
             # only play player_attack animation once per key pressed
             if self.action_index == c.ATTACK_IDX:
                 self.attack = False
+            elif self.action_index == c.HURT_IDX:
+                self.action_index = c.IDLE_IDX
+            elif self.action_index == c.DEAD_IDX:
+                self.frame_index = len(
+                    self.animation_list[self.action_index]) - 1
 
     def draw(self, surf):
         img = pygame.transform.flip(self.image, self.flip, False)
@@ -133,7 +169,9 @@ class Player(pygame.sprite.Sprite):
 
         # adjust hitbox
         if self.flip:
-            self.hitbox = (self.rect.x + 22, self.rect.y + 15, 29, 39)
+            self.hitbox = pygame.Rect(self.rect.x + 22, self.rect.y + 15, 29,
+                                      39)
         else:
-            self.hitbox = (self.rect.x + 11, self.rect.y + 15, 29, 39)
+            self.hitbox = pygame.Rect(self.rect.x + 11, self.rect.y + 15, 29,
+                                      39)
         pygame.draw.rect(surf, 'red', self.hitbox, 1)

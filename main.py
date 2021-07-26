@@ -36,18 +36,20 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+            if player.alive:
+                if event.key == pygame.K_a:
+                    player.move_left = True
+                    player.attack = False
 
-            if event.key == pygame.K_a:
-                player.move_left = True
-            if event.key == pygame.K_d:
-                player.move_right = True
-            if event.key == pygame.K_w and not player.in_air:
-                player.jump = True
-                player.vel_y = 0
-            # can't attack while moving
-            if event.key == pygame.K_SPACE \
-                    and not player.move_left and not player.move_right:
-                player.attack = True
+                if event.key == pygame.K_d:
+                    player.move_right = True
+                    player.attack = False
+
+                if event.key == pygame.K_w and not player.in_air:
+                    player.jump = True
+                    player.vel_y = 0
+                if event.key == pygame.K_SPACE:
+                    player.attack = True
 
         # unpress key
         if event.type == pygame.KEYUP:
@@ -62,12 +64,13 @@ while True:
 
     item_group.update(screen, player)
 
+    player.update(screen, enemy_group)
 
     if player.alive:
-        player.update_player(screen)
-
-        # attack
-        if player.attack and not player.move_left and not player.move_right and not player.in_air:
+        # stop moving to attack
+        if player.attack and not player.in_air:
+            player.move_left = False
+            player.move_right = False
             sword.update(enemy_group, screen, player.rect.x, player.rect.y, player.flip, player.frame_index)
 
         else:

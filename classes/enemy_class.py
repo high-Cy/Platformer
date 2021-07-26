@@ -58,8 +58,8 @@ class Slime01(Enemy):
                 self.kill()
 
         self.check_alive()
-        self.draw(screen)
         self.animate()
+        self.draw(screen)
 
     def check_alive(self):
         if self.health <= 0:

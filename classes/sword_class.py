@@ -13,13 +13,14 @@ class Sword(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(x + 39, y + 33, 26, 18)
 
     def update(self, group,  screen, x, y, flip, attack_frame):
-        if not self.collided and attack_frame >= 2:
+        # sword comes out frame 2
+        if not self.collided and attack_frame >= 3:
             self.check_collision(group)
 
         self.draw(screen, x, y, flip)
 
-    def check_collision(self, group):
-        for enemy in group:
+    def check_collision(self, enemy_group):
+        for enemy in enemy_group:
             if pygame.Rect.colliderect(self.hitbox, enemy.hitbox):
                 # to play hurt animation
                 enemy.action_index = c.HURT_IDX

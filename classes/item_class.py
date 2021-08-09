@@ -11,8 +11,9 @@ class Item(pygame.sprite.Sprite):
 
     def update(self, screen, player):
         if pygame.Rect.colliderect(self.rect, player.hitbox):
-            if self.item_type == c.HEALTH:
-                pass
+            if self.item_type == c.HEALTH and player.health < player.max_health:
+                player.health = min(player.max_health, player.health + 3)
+
             elif self.item_type == c.DOUBJUMP:
                 pass
             elif self.item_type == c.APPLE:

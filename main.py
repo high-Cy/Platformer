@@ -7,12 +7,14 @@ from classes import sword_class
 from classes import  item_class
 
 pygame.init()
+pygame.font.init()
 
 screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
 pygame.display.set_caption(c.CAPTION)
-# pygame.display.set_icon()
+# pygame.display.set_icon(pygame.image.load(c.ICON))
 
 clock = pygame.time.Clock()
+font = pygame.font.Font('lemonmilk.otf', 18)
 
 player = player_class.Player()
 sword = sword_class.Sword(player.rect.x, player.rect.y, player.flip)
@@ -23,7 +25,7 @@ enemy_group = pygame.sprite.Group()
 enemy_group.add(slime01, slime2)
 
 item_group = pygame.sprite.Group()
-item = item_class.Item(c.COIN1, 200, 375)
+item = item_class.Item(c.HEALTH, 200, 375)
 item_group.add(item)
 
 while True:
@@ -64,7 +66,7 @@ while True:
 
     item_group.update(screen, player)
 
-    player.update(screen, enemy_group)
+    player.update(screen, enemy_group, font)
 
     if player.alive:
         # stop moving to attack

@@ -1,13 +1,12 @@
 import pygame
 import os
 import constants as c
+import utility
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.alive = True
-
         # frames
         self.animation_list = []
         self.load_images()
@@ -35,10 +34,11 @@ class Player(pygame.sprite.Sprite):
 
         self.attack = False
 
-        self.hitbox = pygame.Rect(self.rect.x + 11, self.rect.y + 15, 29, 39)
-
-        self.health = 3
+        self.alive = True
+        self.health = 5
         self.max_health = self.health
+        self.hitbox = pygame.Rect(self.rect.x + 11, self.rect.y + 15, 29, 39)
+        self.heart = pygame.image.load('player/heart.png')
         self.collided = False
         self.hurt_timer = None
 
@@ -60,22 +60,24 @@ class Player(pygame.sprite.Sprite):
         img = pygame.transform.scale2x(pygame.image.load(jmp).convert())
         self.animation_list.append([img])
 
-    def update(self, screen, enemy_group):
-        # update action when not hurt
-        if self.action_index != c.HURT_IDX:
+    def update(self, screen, enemy_group, font):
+        # Cant do anything when hurt
+        if self.action_index != c.HURT_IDX and self.alive:
             if self.in_air:
-                self.update_action(c.JUMP_IDX)
+                utility.update_action(self, c.JUMP_IDX)
             elif self.move_left or self.move_right:
-                self.update_action(c.RUN_IDX)
+                utility.update_action(self, c.RUN_IDX)
             elif self.attack:
-                self.update_action(c.ATTACK_IDX)
-            elif not self.alive:
-                self.update_action(c.DEAD_IDX)
-
+                utility.update_action(self, c.ATTACK_IDX)
             else:
-                self.update_action(c.IDLE_IDX)
+                utility.update_action(self, c.IDLE_IDX)
             # can't move if hurt
             self.move()
+            self.check_collision(enemy_group)
+
+        # dead
+        elif not self.alive:
+            utility.update_action(self, c.DEAD_IDX)
 
         # Grants n amount of time of invincibility after hurt
         if self.hurt_timer and (
@@ -83,23 +85,17 @@ class Player(pygame.sprite.Sprite):
             self.hurt_timer = None
             self.collided = False
 
-        if self.alive:
-            self.check_collision(enemy_group)
         self.animate()
         self.draw(screen)
 
-    def update_action(self, new_action_idx):
-        if new_action_idx != self.action_index:
-            self.action_index = new_action_idx
-            self.frame_index = 0
-            self.current_time = pygame.time.get_ticks()
+        self.draw_health(screen, font)
 
     def check_collision(self, enemy_group):
         for enemy in enemy_group:
             if pygame.Rect.colliderect(self.hitbox, enemy.hitbox):
                 # ensure only counts 1 collision
                 if enemy.alive and not self.collided:
-                    self.update_action(c.HURT_IDX)
+                    utility.update_action(self, c.HURT_IDX)
                     self.collided = True
                     self.health -= 1
                     self.hurt_timer = pygame.time.get_ticks()
@@ -125,7 +121,7 @@ class Player(pygame.sprite.Sprite):
 
         # jump
         if self.jump and not self.in_air:
-            self.vel_y += self.jump_vel
+            self.vel_y = self.jump_vel
             self.jump = False
             self.in_air = True
 
@@ -162,6 +158,12 @@ class Player(pygame.sprite.Sprite):
             elif self.action_index == c.DEAD_IDX:
                 self.frame_index = len(
                     self.animation_list[self.action_index]) - 1
+
+    def draw_health(self, screen, font):
+        surf = font.render('Health: ', True, 'white')
+        screen.blit(surf, (20, 20))
+        for i in range(self.health):
+            screen.blit(self.heart, (100 + (i * 30), 15))
 
     def draw(self, surf):
         img = pygame.transform.flip(self.image, self.flip, False)

@@ -8,8 +8,8 @@ import utility
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.animation_list = []
-        self.action_index = c.IDLE_IDX
+        self.animation_dict = {}
+        self.action = c.IDLE_IDX
         self.current_time = pygame.time.get_ticks()
 
         self.frame_index = 0
@@ -34,78 +34,71 @@ class Enemy(pygame.sprite.Sprite):
         surf.blit(img, self.rect)
 
 
-
 class Slime01(Enemy):
     def __init__(self, x, y):
         super().__init__()
         self.load_images()
 
-        self.cooldowns = [c.IDLE_ANI, c.RUN_ANI_2, c.DEAD_ANI, c.HURT_ANI]
-
-        self.image = self.animation_list[0][self.frame_index]
+        self.cooldowns = {
+            c.IDLE_IDX: c.IDLE_ANI, c.MOVE_IDX: c.RUN_ANI,
+            c.DEAD_IDX: c.DEAD_ANI, c.HURT_IDX: c.HURT_ANI
+        }
+        self.image = self.animation_dict[self.action][self.frame_index]
         self.rect = self.image.get_rect(center=(x, y))
 
         self.health = 2
-        self.hitbox = (self.rect.x + 2, self.rect.y + 9, 30, 25)
+        self.hitbox = pygame.Rect(0, 0, 30, 24)
         self.vision = pygame.Rect(0, 0, 150, 25)
 
     def load_images(self):
-        frame_type = ['idle', 'move', 'die', 'hurt']
+        frame_type = [c.IDLE_IDX, c.MOVE_IDX, c.DEAD_IDX, c.HURT_IDX]
         for animation in frame_type:
-            tmp_list = []
-            num_frames = len(os.listdir(f'slime01/slime01-{animation}'))
-            for i in range(num_frames):
-                fn = f'slime01/slime01-{animation}/slime-{animation}-{i}.png'
+            self.animation_dict[animation] = utility.load_images(
+                f'slime01/slime01-{animation}/*.png')
 
-                img = pygame.image.load(fn).convert_alpha()
-                img = pygame.transform.scale(img, (32, 32))
-                tmp_list.append(img)
-
-            self.animation_list.append(tmp_list)
-
-    def update(self, screen):
+    def update(self, screen, player_hitbox):
         if self.alive:
-            self.ai()
+            self.ai(player_hitbox)
             self.check_alive()
 
         else:
             utility.update_action(self, c.DEAD_IDX)
             # kill after finish death animation and timer
             if self.frame_index == len(
-                    self.animation_list[self.action_index]) - 1 and (
+                    self.animation_dict[self.action]) - 1 and (
                     pygame.time.get_ticks() - self.current_time) > c.KILL_TIMER:
                 self.kill()
 
         self.animate()
         self.draw(screen)
 
-    def ai(self):
-        if self.action_index == c.RUN_IDX:
+    def ai(self, player_hitbox):
+        if self.action == c.MOVE_IDX:
             if randint(1, 300) == 1:
                 utility.update_action(self, c.IDLE_IDX)
             else:
-                if self.direction == 1:
-                    self.move_right = True
-                else:
-                    self.move_right = False
-
+                self.move_right = True if self.direction == 1 else False
                 self.move_left = not self.move_right
-                if self.action_index != c.HURT_IDX:
-                    self.move()
-                    self.move_counter += 1
+
+                self.move()
+                self.move_counter += 1
 
                 if self.move_counter > c.MOVE_COUNTER:
                     self.direction *= -1
                     self.move_counter *= -1
 
-        elif self.action_index == c.IDLE_IDX:
+            self.speed = c.ENEMY_SPEED_2 \
+                if pygame.Rect.colliderect(self.vision, player_hitbox) \
+                else c.ENEMY_SPEED
+
+        elif self.action == c.IDLE_IDX:
             self.idle_counter += 1
             if self.idle_counter >= c.IDLE_COUNTER:
                 self.idle_counter = 0
-                utility.update_action(self, c.RUN_IDX)
+                utility.update_action(self, c.MOVE_IDX)
 
     def move(self):
-        utility.update_action(self, c.RUN_IDX)
+        utility.update_action(self, c.MOVE_IDX)
 
         # reset movement variables
         dx = 0
@@ -125,27 +118,26 @@ class Slime01(Enemy):
         if self.rect.bottom + dy > 400:
             dy = 400 - self.rect.bottom
 
-
         # update rectangle position
         self.rect.x += dx
         self.rect.y += dy
 
     def animate(self):
         # increment frame index based on action's cooldown
-        self.image = self.animation_list[self.action_index][self.frame_index]
+        self.image = self.animation_dict[self.action][self.frame_index]
         if (pygame.time.get_ticks() - self.current_time) > \
-                self.cooldowns[self.action_index]:
+                self.cooldowns[self.action]:
             self.current_time = pygame.time.get_ticks()
             self.frame_index += 1
 
         # reset frame index
-        if self.frame_index >= len(self.animation_list[self.action_index]):
+        if self.frame_index >= len(self.animation_dict[self.action]):
             # only play dead / hurt animation once
-            if self.action_index == c.DEAD_IDX:
+            if self.action == c.DEAD_IDX:
                 self.frame_index = len(
-                    self.animation_list[self.action_index]) - 1
-            elif self.action_index == c.HURT_IDX:
-                utility.update_action(self, c.IDLE_IDX)
+                    self.animation_dict[self.action]) - 1
+            elif self.action == c.HURT_IDX:
+                utility.update_action(self, c.MOVE_IDX)
                 self.frame_index = 0
             else:
                 self.frame_index = 0
@@ -155,8 +147,9 @@ class Slime01(Enemy):
         surf.blit(img, self.rect)
 
         # adjust hitbox and vision
-        self.hitbox = (self.rect.x + 2, self.rect.y + 9, 30, 25)
-        self.vision.center = (self.rect.centerx + 75 * self.direction, self.rect.centery+5)
+        self.hitbox.center = (self.rect.centerx + 2, self.rect.centery + 7)
+        self.vision.center = (
+            self.rect.centerx + 75 * self.direction, self.rect.centery + 5)
 
         pygame.draw.rect(surf, 'red', self.hitbox, 1)
         pygame.draw.rect(surf, 'blue', self.vision, 2)

@@ -8,16 +8,19 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # frames
-        self.animation_list = []
+        self.animation_dict = {}
         self.load_images()
 
         # animations
-        self.cooldowns = [c.IDLE_ANI, c.RUN_ANI, c.DEAD_ANI, c.HURT_ANI,
-                          c.ATTACK_ANI, c.JUMP_ANI]
+        self.cooldowns = {
+            c.IDLE_IDX: c.IDLE_ANI, c.MOVE_IDX: c.RUN_ANI,
+            c.DEAD_IDX: c.DEAD_ANI, c.HURT_IDX: c.HURT_ANI,
+            c.ATTACK_IDX: c.ATTACK_ANI, c.JUMP_IDX: c.JUMP_ANI
+        }
         self.current_time = pygame.time.get_ticks()
         self.frame_index = 0
-        self.action_index = c.IDLE_IDX
-        self.image = self.animation_list[self.action_index][self.frame_index]
+        self.action = c.IDLE_IDX
+        self.image = self.animation_dict[self.action][self.frame_index]
         self.rect = self.image.get_rect(center=(100, 100))
         self.flip = False
         self.direction = 1
@@ -34,9 +37,10 @@ class Player(pygame.sprite.Sprite):
 
         self.attack = False
 
-        self.alive = True
-        self.health = 5
+        self.health = c.MAX_HEALTH
         self.max_health = self.health
+
+        self.alive = True
         self.hitbox = pygame.Rect(self.rect.x + 11, self.rect.y + 15, 29, 39)
         self.heart = pygame.image.load('player/heart.png')
         self.collided = False
@@ -44,29 +48,23 @@ class Player(pygame.sprite.Sprite):
 
     def load_images(self):
         # add frames to animation list
-        frame_type = ['idle', 'run', 'dead', 'hurt', 'attack']
+        frame_type = [c.IDLE_IDX, c.MOVE_IDX, c.DEAD_IDX, c.HURT_IDX,
+                      c.ATTACK_IDX]
         for animation in frame_type:
-            tmp_list = []
-            num_frames = len(os.listdir(f'player/player_{animation}'))
-            for i in range(1, num_frames):
-                fn = f'player/player_{animation}/{animation}-{i}.png'
-                img = pygame.transform.scale2x(pygame.image.load(fn).convert())
-                tmp_list.append(img)
-
-            self.animation_list.append(tmp_list)
+            self.animation_dict[animation] = utility.load_images(
+                f'player/player_{animation}/*.png', scale=2)
 
         # jumping only has one frame
-        jmp = f'player/player_jump.png'
-        img = pygame.transform.scale2x(pygame.image.load(jmp).convert())
-        self.animation_list.append([img])
+        self.animation_dict[c.JUMP_IDX] = [utility.load_image(
+            'player/player_jump.png', scale=2)]
 
     def update(self, screen, enemy_group, font):
         # Cant do anything when hurt
-        if self.action_index != c.HURT_IDX and self.alive:
+        if self.action != c.HURT_IDX and self.alive:
             if self.in_air:
                 utility.update_action(self, c.JUMP_IDX)
             elif self.move_left or self.move_right:
-                utility.update_action(self, c.RUN_IDX)
+                utility.update_action(self, c.MOVE_IDX)
             elif self.attack:
                 utility.update_action(self, c.ATTACK_IDX)
             else:
@@ -141,39 +139,36 @@ class Player(pygame.sprite.Sprite):
 
     def animate(self):
         # increment frame index based on action's cooldown
-        self.image = self.animation_list[self.action_index][self.frame_index]
+        self.image = self.animation_dict[self.action][self.frame_index]
         if (pygame.time.get_ticks() - self.current_time) > \
-                self.cooldowns[self.action_index]:
+                self.cooldowns[self.action]:
             self.current_time = pygame.time.get_ticks()
             self.frame_index += 1
 
         # reset frame index
-        if self.frame_index >= len(self.animation_list[self.action_index]):
+        if self.frame_index >= len(self.animation_dict[self.action]):
             self.frame_index = 0
             # only play player_attack animation once per key pressed
-            if self.action_index == c.ATTACK_IDX:
+            if self.action == c.ATTACK_IDX:
                 self.attack = False
-            elif self.action_index == c.HURT_IDX:
-                self.action_index = c.IDLE_IDX
-            elif self.action_index == c.DEAD_IDX:
+            elif self.action == c.HURT_IDX:
+                self.action = c.IDLE_IDX
+            elif self.action == c.DEAD_IDX:
                 self.frame_index = len(
-                    self.animation_list[self.action_index]) - 1
+                    self.animation_dict[self.action]) - 1
 
     def draw_health(self, screen, font):
-        surf = font.render('Health: ', True, 'white')
-        screen.blit(surf, (20, 20))
+        # surf = font.render('Health: ', True, 'white')
+        # screen.blit(surf, (20, 20))
         for i in range(self.health):
-            screen.blit(self.heart, (100 + (i * 30), 15))
+            screen.blit(self.heart, ((i * 30), 5))  # +100 to x if add words
 
     def draw(self, surf):
         img = pygame.transform.flip(self.image, self.flip, False)
         surf.blit(img, self.rect)
 
         # adjust hitbox
-        if self.flip:
-            self.hitbox = pygame.Rect(self.rect.x + 22, self.rect.y + 15, 29,
-                                      39)
-        else:
-            self.hitbox = pygame.Rect(self.rect.x + 11, self.rect.y + 15, 29,
-                                      39)
+        self.hitbox = pygame.Rect(self.rect.x + 22, self.rect.y + 15, 29, 39) \
+            if self.flip else \
+            pygame.Rect(self.rect.x + 11, self.rect.y + 15, 29, 39)
         pygame.draw.rect(surf, 'red', self.hitbox, 1)

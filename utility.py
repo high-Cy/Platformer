@@ -39,9 +39,9 @@ def load_images(glob, scale=None, width=None, height=None):
     return images
 
 
-def update_action(character, new_action_idx):
-    if new_action_idx != character.action_index:
-        character.action_index = new_action_idx
+def update_action(character, new_action):
+    if new_action != character.action:
+        character.action = new_action
         character.frame_index = 0
         character.current_time = pygame.time.get_ticks()
 

@@ -6,18 +6,19 @@ SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.7)
 FPS = 60
 
 # Game Variables
+MAX_HEALTH = 5
 GRAVITY = 0.75
 WALK_SPEED = 3
 JUMP_GRAVITY = 1
 JUMP_VEL = -12
 
 # Action Index
-IDLE_IDX = 0
-RUN_IDX = 1
-DEAD_IDX = 2
-HURT_IDX = 3
-ATTACK_IDX = 4
-JUMP_IDX = 5
+IDLE_IDX = 'idle'
+MOVE_IDX = 'move'
+DEAD_IDX = 'die'
+HURT_IDX = 'hurt'
+ATTACK_IDX = 'attack'
+JUMP_IDX = 'jump'
 
 # Animation Cooldowns
 IDLE_ANI = 200

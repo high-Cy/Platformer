@@ -1,5 +1,6 @@
 import pygame
 import constants as c
+import utility
 
 
 class Sword(pygame.sprite.Sprite):
@@ -23,7 +24,7 @@ class Sword(pygame.sprite.Sprite):
         for enemy in enemy_group:
             if pygame.Rect.colliderect(self.hitbox, enemy.hitbox) and enemy.alive:
                 # to play hurt animation
-                enemy.action_index = c.HURT_IDX
+                utility.update_action(enemy, c.HURT_IDX)
 
                 # ensure only counts 1 collision per attack
                 if not self.collided:
@@ -32,8 +33,5 @@ class Sword(pygame.sprite.Sprite):
 
     def draw(self, surf, x, y, flip):
         # adjust hitbox
-        if flip:
-            self.hitbox = pygame.Rect(x - 2, y + 33, 24, 18)
-        else:
-            self.hitbox = pygame.Rect(x + 39, y + 33, 26, 18)
+        self.hitbox = pygame.Rect(x - 2, y + 33, 24, 18) if flip else pygame.Rect(x + 39, y + 33, 26, 18)
         pygame.draw.rect(surf, 'red', self.hitbox, 1)

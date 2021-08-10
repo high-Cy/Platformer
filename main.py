@@ -2,9 +2,9 @@ import pygame
 import sys
 import constants as c
 from classes import player_class
-from classes import  enemy_class
+from classes import enemy_class
 from classes import sword_class
-from classes import  item_class
+from classes import item_class
 
 pygame.init()
 pygame.font.init()
@@ -62,7 +62,7 @@ while True:
 
     screen.fill('black')
 
-    enemy_group.update(screen)
+    enemy_group.update(screen, player.hitbox)
 
     item_group.update(screen, player)
 
@@ -73,12 +73,12 @@ while True:
         if player.attack and not player.in_air:
             player.move_left = False
             player.move_right = False
-            sword.update(enemy_group, screen, player.rect.x, player.rect.y, player.flip, player.frame_index)
+            sword.update(enemy_group, screen, player.rect.x, player.rect.y,
+                         player.flip, player.frame_index)
 
         else:
             player.attack = False
             sword.collided = False
-
 
     pygame.display.update()
     clock.tick(c.FPS)

@@ -1,5 +1,5 @@
 CAPTION = 'Platformer'
-# ICON = 'finn.jpeg'
+# ICON = ''
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.7)
@@ -14,9 +14,9 @@ JUMP_VEL = -12
 
 # Action Index
 IDLE_IDX = 'idle'
-MOVE_IDX = 'move'
+RUN_IDX = 'run'
 DEAD_IDX = 'die'
-HURT_IDX = 'hurt'
+HIT_IDX = 'hit'
 ATTACK_IDX = 'attack'
 JUMP_IDX = 'jump'
 
@@ -39,7 +39,7 @@ RUN_ANI_2 = 400
 MOVE_COUNTER = 50
 IDLE_COUNTER = 50
 
-# Items
+# items
 HEALTH = 'Health'
 DOUBJUMP = 'Doub_Jump'
 APPLE = 'Apple'

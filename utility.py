@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def load_image(file_path, scale=None, width=None, height=None):
-    img = pygame.image.load(file_path).convert_alpha()
+    img = pygame.image.load(file_path)#.convert_alpha()
 
     if width is None:
         width = img.get_width()

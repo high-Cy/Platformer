@@ -1,10 +1,11 @@
 import pygame
 import sys
-import constants as c
-from classes import player
-from classes import enemy
-from classes import sword
-from classes import item
+from src import player
+from src import constants as c
+from src import enemy
+from src import sword
+from src import item
+from src import levels
 
 pygame.init()
 pygame.font.init()
@@ -16,18 +17,20 @@ pygame.display.set_caption(c.CAPTION)
 clock = pygame.time.Clock()
 font = pygame.font.Font('lemonmilk.otf', 18)
 
-player = player.Player()
+player = player.Player((300, 200))
 sword = sword.Sword(player.rect.x, player.rect.y, player.flip)
 
-slime01 = enemy.Slime01(300, 375)
-slime2 = enemy.Slime01(500, 375)
+slime = enemy.Slime(300, 375)
+worm = enemy.Worm(500, 375)
 enemy_group = pygame.sprite.Group()
-enemy_group.add(slime01, slime2)
+enemy_group.add(slime, worm)
 
 item_group = pygame.sprite.Group()
 item = item.Item(c.HEALTH, 200, 375)
 item_group.add(item)
 
+
+level = levels.Level(levels.level_map, screen)
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -61,6 +64,8 @@ while True:
                 player.move_right = False
 
     screen.fill('black')
+
+    level.run()
 
     enemy_group.update(screen, player.hitbox)
 

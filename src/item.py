@@ -1,6 +1,5 @@
 import pygame
-import constants as c
-import utility
+from src import constants as c, utility
 
 
 class Item(pygame.sprite.Sprite):
@@ -28,9 +27,9 @@ class Item(pygame.sprite.Sprite):
 
             self.kill()
 
-    def draw(self, surf):
-        surf.blit(self.image, self.rect)
-        pygame.draw.rect(surf, 'red', self.rect, 1)
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+        pygame.draw.rect(screen, 'red', self.rect, 1)
 
 
 path = 'assets/items'

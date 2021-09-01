@@ -39,6 +39,11 @@ class Water:
         for tile in range(num_tiles):
             x = tile * water_width + water_start
             y = top
+            sprite = tiles.AnimatedTile(c.TILE_SIZE, (x,y), f'{path}/water/*.png')
+            self.water_sprites.add(sprite)
+
+    def update(self, screen, shift):
+        self.water_sprites.update(screen, shift)
 
 
 class Clouds:

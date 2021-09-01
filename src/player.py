@@ -79,10 +79,10 @@ class Player(pygame.sprite.Sprite):
     #     self.draw(screen)
     #     self.draw_health(screen, font)
 
-    def update(self, screen, tiles, lvl_shift):
+    def update(self, screen, lvl_shift, collidables):
         self.get_input()
         self.get_action()
-        self.movement(tiles)
+        self.movement(collidables)
         self.animate()
         self.draw(screen)
 
@@ -131,15 +131,15 @@ class Player(pygame.sprite.Sprite):
         #             self.health = 0
         #             self.alive = False
 
-    def movement(self, tiles):
+    def movement(self, collidables):
         self.hitbox.x += self.direction.x * self.speed
-        self.tile_collide_x(tiles)
+        self.tile_collide_x(collidables)
 
         self.apply_gravity()
-        self.tile_collide_y(tiles)
+        self.tile_collide_y(collidables)
 
-    def tile_collide_x(self, tiles):
-        for sprite in tiles:
+    def tile_collide_x(self, collidables):
+        for sprite in collidables:
             if self.hitbox.colliderect(sprite.rect):
                 if self.direction.x < 0:
                     self.hitbox.left = sprite.rect.right
@@ -156,8 +156,8 @@ class Player(pygame.sprite.Sprite):
         # if self.on_right and (self.hitbox.right > self.current_x or self.direction.x <=0):
         #     self.on_right = False
 
-    def tile_collide_y(self, tiles):
-        for sprite in tiles:
+    def tile_collide_y(self, collidables):
+        for sprite in collidables:
             if self.hitbox.colliderect(sprite.rect):
                 if self.direction.y > 0:
                     self.hitbox.bottom = sprite.rect.top

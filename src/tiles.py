@@ -47,10 +47,6 @@ class AnimatedTile(Tile):
         if self.frame_index >= len(self.frames):
             self.frame_index = 0
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
-
-
 class Palm(AnimatedTile):
     def __init__(self, size, pos, path, offset):
         super().__init__(size, pos, path)

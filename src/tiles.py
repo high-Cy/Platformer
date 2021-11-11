@@ -26,9 +26,9 @@ class StaticTile(Tile):
 class AnimatedTile(Tile):
     def __init__(self, size, pos, path):
         super().__init__(size, pos)
-        self.frames = u.load_images(path)
+        self.animation_list = u.load_images(path)
         self.frame_index = 0
-        self.image = self.frames[self.frame_index]
+        self.image = self.animation_list[self.frame_index]
 
         self.current_time = pygame.time.get_ticks()
 
@@ -38,14 +38,15 @@ class AnimatedTile(Tile):
         self.rect.x += shift
 
     def animate(self):
-        self.image = self.frames[self.frame_index]
+        self.image = self.animation_list[self.frame_index]
         if (pygame.time.get_ticks() - self.current_time) > \
                 c.TILE_ANI:
             self.current_time = pygame.time.get_ticks()
             self.frame_index += 1
 
-        if self.frame_index >= len(self.frames):
+        if self.frame_index >= len(self.animation_list):
             self.frame_index = 0
+
 
 class Palm(AnimatedTile):
     def __init__(self, size, pos, path, offset):

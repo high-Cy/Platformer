@@ -13,8 +13,8 @@ class Sword(pygame.sprite.Sprite):
         self.collided = False
         self.hitbox = pygame.Rect(x + 39, y + 33, 26, 18)
 
-    def update(self, group, screen, x, y, flip, attack_frame):
-        self.check_collision(group, attack_frame)
+    def update(self, enemies, screen, x, y, flip, attack_frame):
+        self.check_collision(enemies, attack_frame)
         self.draw(screen, x, y, flip)
 
     def check_collision(self, enemy_group, attack_frame):
@@ -35,8 +35,8 @@ class Sword(pygame.sprite.Sprite):
     def draw(self, surf, x, y, flip):
         # adjust hitbox
         if flip:
-            self.hitbox = pygame.Rect(x - 2, y + 33, 24,18)
+            self.hitbox = pygame.Rect(x - 15, y + 20, 24,20)
         else:
-            self.hitbox = pygame.Rect(x + 39, y + 33, 26, 18)
+            self.hitbox = pygame.Rect(x + 27, y + 20, 26, 20)
 
         pygame.draw.rect(surf, 'red', self.hitbox, 1)

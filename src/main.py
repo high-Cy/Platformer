@@ -1,89 +1,49 @@
-import pygame
-import sys
-from src import player
-from src import constants as c
-from src import enemy
-from src import sword
-from src import item
-from src import levels
+import pygame, sys
+from src.constants import *
+from src.levels import Level
+from src.overworld import Overworld
 
+
+class Game:
+    def __init__(self):
+        self.max_level = 2
+        self.level = None
+        self.overworld = Overworld(0, self.max_level, screen, self.create_level)
+        self.is_overworld = True
+
+    def create_level(self, current_level):
+        self.level = Level(current_level, screen, self.create_overworld)
+        self.is_overworld = False
+
+    def create_overworld(self, current_level, new_max_level):
+        if new_max_level > self.max_level:
+            self.max_level = new_max_level
+        self.overworld = Overworld(current_level, self.max_level, screen,
+                                   self.create_level)
+        self.is_overworld = True
+
+    def run(self):
+        if self.is_overworld:
+            self.overworld.run()
+        else:
+            self.level.run()
+
+
+# Pygame setup
 pygame.init()
-pygame.font.init()
-
-screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
-pygame.display.set_caption(c.CAPTION)
-# pygame.display.set_icon(pygame.image.load(c.ICON))
-
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
-font = pygame.font.Font('lemonmilk.otf', 18)
 
-player = player.Player((300, 200))
-sword = sword.Sword(player.rect.x, player.rect.y, player.flip)
+game = Game()
 
-slime = enemy.Slime(300, 375)
-worm = enemy.Worm(500, 375)
-enemy_group = pygame.sprite.Group()
-enemy_group.add(slime, worm)
-
-item_group = pygame.sprite.Group()
-item = item.Item(c.HEALTH, 200, 375)
-item_group.add(item)
-
-
-level = levels.Level(levels.level_map, screen)
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        # press key
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                sys.exit()
-            if player.alive:
-                if event.key == pygame.K_a:
-                    player.move_left = True
-                    player.attack = False
 
-                if event.key == pygame.K_d:
-                    player.move_right = True
-                    player.attack = False
-
-                if event.key == pygame.K_w and not player.in_air:
-                    player.jump = True
-                    player.vel_y = 0
-                if event.key == pygame.K_SPACE:
-                    player.attack = True
-
-        # unpress key
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:
-                player.move_left = False
-            if event.key == pygame.K_d:
-                player.move_right = False
-
-    screen.fill('black')
-
-    level.run()
-
-    enemy_group.update(screen, player.hitbox)
-
-    item_group.update(screen, player)
-
-    player.update(screen, enemy_group, font)
-
-    if player.alive:
-        # stop moving to attack
-        if player.attack and not player.in_air:
-            player.move_left = False
-            player.move_right = False
-            sword.update(enemy_group, screen, player.rect.x, player.rect.y,
-                         player.flip, player.frame_index)
-
-        else:
-            player.attack = False
-            sword.collided = False
+    screen.fill('grey')
+    game.run()
 
     pygame.display.update()
-    clock.tick(c.FPS)
+    clock.tick(60)

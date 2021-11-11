@@ -53,3 +53,5 @@ COIN1 = 'Coin1'
 COIN2 = 'Coin2'
 COIN3 = 'Coin3'
 KEY = 'Key'
+
+SKY_HORIZON = 8

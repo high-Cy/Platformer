@@ -21,6 +21,24 @@ def load_image(file_path, scale=None, width=None, height=None):
     return img
 
 
+def load_image_player(file_path, scale=None, width=None, height=None):
+    img = pygame.image.load(file_path)  # .convert_alpha()
+
+    if width is None:
+        width = img.get_width()
+    if height is None:
+        height = img.get_height()
+
+    if scale is not None:
+        width = int(width * scale)
+        height = int(height * scale)
+
+    img = pygame.transform.scale(img, (width, height))
+    img2 = pygame.transform.chop(img, pygame.Rect(60, 0, 64, 0))
+
+    return img2
+
+
 def load_images(glob, scale=None, width=None, height=None):
     def convert_to_int(path):
         # Extract any digits from the name and convert to an int

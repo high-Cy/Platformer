@@ -1,7 +1,11 @@
 import pygame
 from src import constants as c, utility, sword, effect
 
+'''
+ADD DEATH TIMER SO WONT RETURN TO OVERWORLD ONCE HEALTH = 0
+MAYBE WAIT 3 -5 SEC BEFORE RETURNING
 
+'''
 class Player(pygame.sprite.Sprite):
     path = 'assets/player'
 
@@ -17,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         }
         self.current_time = pygame.time.get_ticks()
         self.frame_index = 0
-        self.action = c.ATTACK_IDX
+        self.action = c.IDLE_IDX
         self.image = self.animation_dict[self.action][self.frame_index]
         self.rect = self.image.get_rect(topleft=pos)
         self.flip = False
@@ -37,7 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = c.GRAVITY
 
         self.attack = False
-        # self.sword = sword.Sword(self.rect.x, self.rect.y, self.flip)
+        self.sword = sword.Sword(self.rect.x, self.rect.y, self.flip)
 
         self.health = c.MAX_HEALTH
         self.max_health = self.health
@@ -57,18 +61,14 @@ class Player(pygame.sprite.Sprite):
         self.run_frame = 0
         self.run_time = pygame.time.get_ticks()
 
-
     def load_images(self):
         # add frames to animation list
         frame_type = [c.IDLE_IDX, c.RUN_IDX, c.DEAD_IDX, c.HIT_IDX,
-                      c.ATTACK_IDX]
+                      c.ATTACK_IDX, c.JUMP_IDX]
         for animation in frame_type:
             self.animation_dict[animation] = utility.load_images(
                 f'{self.path}/player_{animation}/*.png', scale=2)
 
-        # jumping only has one frame
-        self.animation_dict[c.JUMP_IDX] = [utility.load_image(
-            f'{self.path}/player_jump.png', scale=2)]
 
     # def update(self, screen, enemy_group, font):
     #     self.get_action()
@@ -79,10 +79,12 @@ class Player(pygame.sprite.Sprite):
     #     self.draw(screen)
     #     self.draw_health(screen, font)
 
-    def update(self, screen, lvl_shift, collidables):
+    def update(self, screen, lvl_shift, collidables, enemies):
         self.get_input()
         self.get_action()
         self.movement(collidables)
+        self.check_collision(collidables, enemies)
+        self.invincibility_timer()
         self.animate()
         self.draw(screen)
 
@@ -90,6 +92,9 @@ class Player(pygame.sprite.Sprite):
         self.dust.update(lvl_shift)
         self.dust.draw(screen)
         self.animate_dust(screen)
+
+        if self.attack:
+            self.attacking(enemies, screen)
 
     def get_action(self):
         # Cant do anything when hurt
@@ -114,22 +119,22 @@ class Player(pygame.sprite.Sprite):
             self.hurt_timer = None
             self.collided = False
 
-    def check_collision(self, tiles):
+    def check_collision(self, tiles, enemy_group):
         self.tile_collide_x(tiles)
         self.tile_collide_y(tiles)
 
-        # for enemy in enemy_group:
-        #     if pygame.Rect.colliderect(self.hitbox, enemy.hitbox):
-        #         # ensure only counts 1 collision
-        #         if enemy.alive and not self.collided and self.alive:
-        #             utility.update_action(self, c.HIT_IDX)
-        #             self.collided = True
-        #             self.health -= 1
-        #             self.hurt_timer = pygame.time.get_ticks()
-        #
-        #         if self.health <= 0:
-        #             self.health = 0
-        #             self.alive = False
+        for enemy in enemy_group:
+            if pygame.Rect.colliderect(self.hitbox, enemy.hitbox) and not self.attack:
+                # ensure only counts 1 collision
+                if enemy.alive and not self.collided and self.alive:
+                    utility.update_action(self, c.HIT_IDX)
+                    self.collided = True
+                    self.health -= 1
+                    self.hurt_timer = pygame.time.get_ticks()
+
+                if self.health <= 0:
+                    self.health = 0
+                    self.alive = False
 
     def movement(self, collidables):
         self.hitbox.x += self.direction.x * self.speed
@@ -183,6 +188,9 @@ class Player(pygame.sprite.Sprite):
 
     def jumping(self):
         self.direction.y = self.jump_vel
+
+    def attacking(self, enemies, screen):
+        self.sword.update(enemies, screen, self.hitbox.x, self.hitbox.y, self.flip, self.frame_index)
 
     def get_dust(self):
         if self.action == c.JUMP_IDX and not self.in_air:
@@ -239,6 +247,7 @@ class Player(pygame.sprite.Sprite):
             # only play player_attack animation once per key pressed
             if self.action == c.ATTACK_IDX:
                 self.attack = False
+                self.sword.collided = False
             elif self.action == c.HIT_IDX:
                 self.action = c.IDLE_IDX
             elif self.action == c.DEAD_IDX:
@@ -279,18 +288,23 @@ class Player(pygame.sprite.Sprite):
     def get_input(self):
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.direction.x = 1
-            self.flip = False
-        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.direction.x = -1
-            self.flip = True
-        else:
-            self.direction.x = 0
+        if self.alive:
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                self.direction.x = 1
+                self.flip = False
+                self.attack = False
 
-        if (keys[pygame.K_UP] or keys[pygame.K_w]) and not self.jumped:
-            self.jumping()
-            self.jumped = True
+            elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                self.direction.x = -1
+                self.flip = True
+                self.attack = False
+            else:
+                self.direction.x = 0
 
-        if keys[pygame.K_SPACE]:
-            self.attack = True
+            if (keys[pygame.K_UP] or keys[pygame.K_w]) and not self.jumped:
+                self.jumping()
+                self.jumped = True
+                self.attack = False
+
+            if keys[pygame.K_SPACE]:
+                self.attack = True

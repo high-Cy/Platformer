@@ -49,9 +49,9 @@ class Player(pygame.sprite.Sprite):
         self.max_health = self.health
 
         self.alive = True
-        self.hitbox_width, self.hitbox_height = 40, 45
-        self.hitbox = self.rect.clip(self.rect.x - 3, self.rect.y - 5,
-                                     self.hitbox_width, self.hitbox_height)
+        self.hitbox_width, self.hitbox_height = 35, 40
+        self.hitbox = pygame.rect.Rect(self.rect.x, self.rect.y, self.hitbox_width, self.hitbox_height)
+
         self.tmp_hitbox = self.hitbox
         self.area = ()
         self.heart = pygame.image.load(f'{self.path}/heart.png')
@@ -100,7 +100,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 utility.update_action(self, c.IDLE_IDX)
 
-        # deadd
+        # dead
         elif not self.alive:
             utility.update_action(self, c.DEAD_IDX)
 
@@ -124,7 +124,6 @@ class Player(pygame.sprite.Sprite):
                 if self.health <= 0:
                     self.health = 0
                     self.direction = pygame.math.Vector2(0, 0)
-                    self.alive = False
 
     def movement(self, collidables):
         self.hitbox.x += self.direction.x * self.speed
@@ -238,10 +237,12 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, screen):
         img = pygame.transform.flip(self.image, self.flip, False)
+        if self.alive:
+            screen.blit(img, self.tmp_hitbox, self.area)
+        else:
+            screen.blit(img, self.tmp_hitbox)
 
-        screen.blit(img, self.tmp_hitbox, self.area)
-
-        pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
 
     def get_input(self):
         keys = pygame.key.get_pressed()

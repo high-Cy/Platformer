@@ -151,35 +151,6 @@ class Level:
             self.player.speed = WALK_SPEED
             self.level_shift = 0
 
-    def check_death(self):
-        if self.player.health <= 0 or self.player.hitbox.top > SCREEN_HEIGHT:
-            self.create_overworld(self.current_level, 0)
-
-    def check_win(self):
-        if pygame.Rect.colliderect(self.player.hitbox, self.goal.rect):
-            self.create_overworld(self.current_level, self.new_max_level)
-
-    def check_win_lose(self):
-        # timer starts when win or lose detected,
-        if not self.end_screen_timer:
-            if self.player.health <= 0 or self.player.hitbox.top > SCREEN_HEIGHT:
-                self.cleared_level = False
-                self.end_screen_timer = pygame.time.get_ticks()
-
-            elif pygame.Rect.colliderect(self.player.hitbox, self.goal.rect):
-                self.cleared_level = True
-                self.end_screen_timer = pygame.time.get_ticks()
-
-        # display end screen
-        if self.end_screen_timer:
-            if (pygame.time.get_ticks() - self.end_screen_timer) >= ENDSCREEN_TIMER:
-                if self.cleared_level:
-                    self.create_overworld(self.current_level, self.new_max_level)
-                else:
-                    self.create_overworld(self.current_level, 0)
-            else:
-                self.ui.display_end_screen(self.cleared_level)
-
     def check_item_collision(self):
 
         for item in self.items_sprites:
@@ -191,38 +162,59 @@ class Level:
                     self.score += D2_SCORE
 
                 elif item.item_type == HEALTH_POTION:
-                    self.player.health += HEAL_AMOUNT
+                    self.player.health = min(self.player.health+ HEAL_AMOUNT, MAX_HEALTH)
 
                 item.kill()
 
-    def run(self):
-        self.constraint_sprites.update(self.screen, self.level_shift)
-        self.scroll_level()
+    def check_win_lose(self):
+        # timer starts when win or lose detected,
+        if not self.end_screen_timer:
+            if self.player.health <= 0 or self.player.hitbox.top > SCREEN_HEIGHT:
+                self.cleared_level = False
+                self.player.alive = False
+                self.end_screen_timer = pygame.time.get_ticks()
 
+            elif pygame.Rect.colliderect(self.player.hitbox, self.goal.rect):
+                self.cleared_level = True
+                self.end_screen_timer = pygame.time.get_ticks()
+
+    def end_screen(self):
+        # display end screen
+        if self.end_screen_timer:
+            if (pygame.time.get_ticks() - self.end_screen_timer) >= ENDSCREEN_TIMER:
+                if self.cleared_level:
+                    self.create_overworld(self.current_level, self.new_max_level)
+                else:
+                    self.create_overworld(self.current_level, 0)
+            else:
+                self.ui.display_end_screen(self.cleared_level)
+
+    def run(self):
+        self.scroll_level()
+        self.constraint_sprites.update(self.screen, self.level_shift)
         self.sky.draw(self.screen)
         self.clouds.update(self.screen, self.level_shift)
 
-        self.bg_palms_sprites.update(self.screen, self.level_shift)
-        self.terrain_sprites.update(self.screen, self.level_shift)
-        self.grass_sprites.update(self.screen, self.level_shift)
+        if self.player.alive and not self.cleared_level:
+            self.bg_palms_sprites.update(self.screen, self.level_shift)
+            self.terrain_sprites.update(self.screen, self.level_shift)
+            self.grass_sprites.update(self.screen, self.level_shift)
+            self.items_sprites.update(self.screen, self.level_shift)
+            self.enemy_sprites.update(self.screen, self.level_shift,
+                                      self.constraint_sprites)
+            self.fg_palms_sprites.update(self.screen, self.level_shift)
+            self.goal.update(self.screen, self.level_shift)
+            self.water.update(self.screen, self.level_shift)
 
-        self.items_sprites.update(self.screen, self.level_shift)
+            self.ui.draw_health(self.player.health)
+            self.ui.draw_score(self.score)
 
-        self.enemy_sprites.update(self.screen, self.level_shift,
-                                  self.constraint_sprites)
+            self.check_item_collision()
+            self.check_win_lose()
 
         collidables = self.terrain_sprites.sprites() + self.fg_palms_sprites.sprites()
         self.player.update(self.screen, self.level_shift, collidables,
                            self.enemy_sprites)
 
-        self.fg_palms_sprites.update(self.screen, self.level_shift)
+        self.end_screen()
 
-        self.goal.update(self.screen, self.level_shift)
-
-        self.water.update(self.screen, self.level_shift)
-
-        self.ui.draw_health(self.player.health)
-        self.ui.draw_score(self.score)
-
-        self.check_win_lose()
-        self.check_item_collision()

@@ -61,4 +61,4 @@ D2_SCORE = 5
 # heal amount
 HEAL_AMOUNT = 3
 
-SKY_HORIZON = 8
+SKY_HORIZON = 5

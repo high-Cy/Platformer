@@ -44,7 +44,7 @@ class OverworldIcon(pygame.sprite.Sprite):
         super().__init__()
         self.pos = pos
         self.image = pygame.transform.scale2x(
-            pygame.image.load('assets/player/player_idle/idle-1.png'))
+            pygame.image.load('assets/player/player_idle/idle-1.png')).convert_alpha()
         self.rect = self.image.get_rect(center=pos)
 
     def update(self):

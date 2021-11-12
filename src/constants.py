@@ -35,8 +35,9 @@ DUST_ANI = 50
 TILE_ANI = 200
 
 # Timers
-KILL_TIMER = 500  # kill sprite
-HURT_TIMER = 1000  # 1 second of invisibility after hurt
+KILL_TIMER = 500            # kill sprite
+HURT_TIMER = 1000           # 1 second of invisibility after hurt
+ENDSCREEN_TIMER = 5000     # displays text after winning or losing level
 
 # Enemy Constants
 ENEMY_SPEED = 1
@@ -46,12 +47,18 @@ MOVE_COUNTER = 50
 IDLE_COUNTER = 50
 
 # items
-HEALTH = 'Health'
+HEALTH_POTION = 'Health'
 DOUBJUMP = 'Doub_Jump'
 APPLE = 'Apple'
-COIN1 = 'Coin1'
-COIN2 = 'Coin2'
-COIN3 = 'Coin3'
+DIAMOND1 = 'Diamond1'
+DIAMOND2 = 'Diamond2'
 KEY = 'Key'
+
+# diamond scores
+D1_SCORE = 1
+D2_SCORE = 5
+
+# heal amount
+HEAL_AMOUNT = 3
 
 SKY_HORIZON = 8

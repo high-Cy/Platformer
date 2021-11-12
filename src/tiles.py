@@ -55,4 +55,9 @@ class Palm(AnimatedTile):
         self.rect.topleft = (pos[0], offset_y)
 
 
-
+class Item(StaticTile):
+    def __init__(self, size, type, pos, surface):
+        super().__init__(size, pos, surface)
+        self.item_type = type
+        self.image = surface
+        self.rect = self.image.get_rect(topleft=pos)

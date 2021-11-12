@@ -6,6 +6,8 @@ ADD DEATH TIMER SO WONT RETURN TO OVERWORLD ONCE HEALTH = 0
 MAYBE WAIT 3 -5 SEC BEFORE RETURNING
 
 '''
+
+
 class Player(pygame.sprite.Sprite):
     path = 'assets/player'
 
@@ -69,21 +71,11 @@ class Player(pygame.sprite.Sprite):
             self.animation_dict[animation] = utility.load_images(
                 f'{self.path}/player_{animation}/*.png', scale=2)
 
-
-    # def update(self, screen, enemy_group, font):
-    #     self.get_action()
-    #     self.move()
-    #     self.check_collision(enemy_group)
-    #     self.invincibility_timer()
-    #     self.animate()
-    #     self.draw(screen)
-    #     self.draw_health(screen, font)
-
     def update(self, screen, lvl_shift, collidables, enemies):
         self.get_input()
         self.get_action()
         self.movement(collidables)
-        self.check_collision(collidables, enemies)
+        self.check_collision(enemies)
         self.invincibility_timer()
         self.animate()
         self.draw(screen)
@@ -119,10 +111,7 @@ class Player(pygame.sprite.Sprite):
             self.hurt_timer = None
             self.collided = False
 
-    def check_collision(self, tiles, enemy_group):
-        self.tile_collide_x(tiles)
-        self.tile_collide_y(tiles)
-
+    def check_collision(self, enemy_group):
         for enemy in enemy_group:
             if pygame.Rect.colliderect(self.hitbox, enemy.hitbox) and not self.attack:
                 # ensure only counts 1 collision
@@ -134,6 +123,7 @@ class Player(pygame.sprite.Sprite):
 
                 if self.health <= 0:
                     self.health = 0
+                    self.direction = pygame.math.Vector2(0, 0)
                     self.alive = False
 
     def movement(self, collidables):
@@ -156,11 +146,6 @@ class Player(pygame.sprite.Sprite):
                     self.current_x = self.hitbox.right
                 self.direction.x = 0
 
-        # if self.on_left and (self.hitbox.left < self.current_x or self.direction.x >= 0):
-        #     self.on_left = False
-        # if self.on_right and (self.hitbox.right > self.current_x or self.direction.x <=0):
-        #     self.on_right = False
-
     def tile_collide_y(self, collidables):
         for sprite in collidables:
             if self.hitbox.colliderect(sprite.rect):
@@ -174,13 +159,6 @@ class Player(pygame.sprite.Sprite):
                     self.hitbox.top = sprite.rect.bottom
                     self.on_roof = True
                 self.direction.y = 0
-
-            # self.in_air = True
-
-        # if not self.in_air and self.direction.y < 0 or self.direction.y > 1:
-        #     self.in_air = True
-        # if self.on_roof and self.direction.y > 0.1:
-        #     self.on_roof = False
 
     def apply_gravity(self):
         self.direction.y += self.gravity
@@ -218,20 +196,6 @@ class Player(pygame.sprite.Sprite):
 
         else:
             self.tmp_hitbox = self.hitbox
-
-        # # set the rect
-        # if not self.in_air and self.on_right:
-        #     self.hitbox = self.image.get_rect(bottomright=self.hitbox.bottomright)
-        # elif not self.in_air and self.on_left:
-        #     self.hitbox = self.image.get_rect(bottomleft=self.hitbox.bottomleft)
-        # elif not self.in_air:
-        #     self.hitbox = self.image.get_rect(midbottom=self.hitbox.midbottom)
-        # elif self.on_roof and self.on_right:
-        #     self.hitbox = self.image.get_rect(topright=self.hitbox.topright)
-        # elif self.on_roof and self.on_left:
-        #     self.hitbox = self.image.get_rect(topleft=self.hitbox.topleft)
-        # elif self.on_roof:
-        #     self.hitbox = self.image.get_rect(midtop=self.hitbox.midtop)
 
     def animate(self):
         # increment frame index based on action's cooldown
@@ -271,12 +235,6 @@ class Player(pygame.sprite.Sprite):
                 pos = self.hitbox.bottomleft - pygame.math.Vector2(15, 10)
 
             screen.blit(dust_img, pos)
-
-    def draw_health(self, screen, font):
-        # surf = font.render('Health: ', True, 'white')
-        # screen.blit(surf, (20, 20))
-        for i in range(self.health):
-            screen.blit(self.heart, ((i * 30), 5))  # +100 to x if add words
 
     def draw(self, screen):
         img = pygame.transform.flip(self.image, self.flip, False)

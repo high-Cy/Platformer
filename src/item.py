@@ -15,14 +15,14 @@ class Item(pygame.sprite.Sprite):
 
     def check_collision(self, player):
         if pygame.Rect.colliderect(self.rect, player.hitbox):
-            if self.item_type == c.HEALTH and player.health < player.max_health:
+            if self.item_type == c.HEALTH_POTION and player.health < player.max_health:
                 player.health = min(player.max_health, player.health + 3)
 
             elif self.item_type == c.DOUBJUMP:
                 pass
             elif self.item_type == c.APPLE:
                 pass
-            elif self.item_type == c.COIN1:
+            elif self.item_type == c.DIAMOND1:
                 pass
 
             self.kill()
@@ -35,18 +35,14 @@ class Item(pygame.sprite.Sprite):
 path = 'assets/items'
 health__img = utility.load_image(f'{path}/health_potion.png')
 doub_jump_img = utility.load_image(f'{path}/doub_jump_potion.png')
-apple_img = utility.load_image(f'{path}/apple.png')
-coin1_img = utility.load_image(f'{path}/coin1.png')
-coin2_img = utility.load_image(f'{path}/coin2.png')
-coin3_img = utility.load_image(f'{path}/coin3.png')
+diamond1_img = utility.load_image(f'{path}/diamond1.png')
+diamond2_img = utility.load_image(f'{path}/diamond2.png')
 key_img = utility.load_image(f'{path}/key.png')
 
 item_boxes = {
-    c.HEALTH: health__img,
+    c.HEALTH_POTION: health__img,
     c.DOUBJUMP: doub_jump_img,
-    c.APPLE: apple_img,
-    c.COIN1: coin1_img,
-    c.COIN2: coin2_img,
-    c.COIN3: coin3_img,
+    c.DIAMOND1: diamond1_img,
+    c.DIAMOND2: diamond2_img,
     c.KEY: key_img
 }

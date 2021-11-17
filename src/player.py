@@ -263,3 +263,5 @@ class Player(pygame.sprite.Sprite):
 
             if keys[pygame.K_SPACE]:
                 self.attack = True
+                self.direction.x = 0
+

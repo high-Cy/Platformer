@@ -33,8 +33,11 @@ class Level:
         self.potion_sound = pygame.mixer.Sound(
             'assets/sound/effects/potion.wav')
         self.death_sound = pygame.mixer.Sound('assets/sound/effects/oof.mp3')
+        self.win_sound = pygame.mixer.Sound('assets/sound/effects/win.wav')
         self.coin_sound.set_volume(SOUND_VOLUME)
-        self.potion_sound.set_volume(SOUND_VOLUME)
+        # self.potion_sound.set_volume(SOUND_VOLUME)
+        self.win_sound.set_volume(SOUND_VOLUME
+                                  )
 
         level_data = levels[self.current_level]
         self.new_max_level = level_data['unlock']
@@ -197,8 +200,10 @@ class Level:
                 self.level_bg.stop()
 
             elif pygame.Rect.colliderect(self.player.hitbox, self.goal.rect):
+                self.win_sound.play()
                 self.cleared_level = True
                 self.end_screen_timer = pygame.time.get_ticks()
+                self.level_bg.stop()
 
     def end_screen(self):
         # display end screen

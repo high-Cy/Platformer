@@ -1,8 +1,7 @@
 import pygame
 from random import randint
 from src.constants import *
-from src import utility
-
+from src.utility import *
 
 class Enemy(pygame.sprite.Sprite):
     path = 'assets/enemy'
@@ -11,7 +10,7 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
 
         self.killed_sound = pygame.mixer.Sound('assets/sound/effects/enemy_die.wav')
-        self.killed_sound.set_volume(SOUND_VOLUME)
+        self.killed_sound.set_volume(0.7)
 
         self.animation_dict = {}
         self.action = IDLE_IDX
@@ -32,7 +31,7 @@ class Enemy(pygame.sprite.Sprite):
     def load_images(self, frame_types, enemy_name, scale):
         img_path = f'{self.path}/{enemy_name}'
         for animation in frame_types:
-            self.animation_dict[animation] = utility.load_images(
+            self.animation_dict[animation] = load_images(
                 f'{img_path}/{animation}/*.png', scale=scale)
 
     def check_alive(self):
@@ -57,7 +56,7 @@ class WeakEnemy(Enemy):
             self.check_alive()
 
         else:
-            utility.update_action(self, DEAD_IDX)
+            update_action(self, DEAD_IDX)
             # kill after finish death animation and timer
             if self.frame_index == len(
                     self.animation_dict[self.action]) - 1 and (
@@ -71,7 +70,7 @@ class WeakEnemy(Enemy):
     def ai(self, constraints):
         if self.action == RUN_IDX:
             if randint(1, 300) == 1:
-                utility.update_action(self, IDLE_IDX)
+                update_action(self, IDLE_IDX)
             else:
                 self.move()
 
@@ -89,10 +88,10 @@ class WeakEnemy(Enemy):
             self.idle_counter += 1
             if self.idle_counter >= IDLE_COUNTER:
                 self.idle_counter = 0
-                utility.update_action(self, RUN_IDX)
+                update_action(self, RUN_IDX)
 
     def move(self):
-        utility.update_action(self, RUN_IDX)
+        update_action(self, RUN_IDX)
 
         # update rectangle position
         self.rect.x += (self.direction * self.speed)
@@ -113,7 +112,7 @@ class WeakEnemy(Enemy):
                 self.frame_index = len(
                     self.animation_dict[self.action]) - 1
             elif self.action == HIT_IDX:
-                utility.update_action(self, RUN_IDX)
+                update_action(self, RUN_IDX)
                 self.frame_index = 0
             else:
                 self.frame_index = 0

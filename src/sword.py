@@ -1,5 +1,6 @@
 import pygame
-from src import constants as c, utility
+from src.constants import *
+from src.utility import *
 
 
 class Sword(pygame.sprite.Sprite):
@@ -9,7 +10,7 @@ class Sword(pygame.sprite.Sprite):
         super().__init__()
         self.stab_sound = pygame.mixer.Sound('assets/sound/effects/stab.mp3')
         self.swing_sound = pygame.mixer.Sound('assets/sound/effects/swing.mp3')
-        self.stab_sound.set_volume(0.4)
+        self.stab_sound.set_volume(SOUND_VOLUME)
 
         self.rect = pygame.Rect(x, y, 29, 39)
         self.flip = flip
@@ -33,7 +34,7 @@ class Sword(pygame.sprite.Sprite):
                                            enemy.hitbox) and enemy.alive:
                     # to play hurt animation
                     if enemy.health > 1:
-                        utility.update_action(enemy, c.HIT_IDX)
+                        update_action(enemy, HIT_IDX)
                         self.stab_sound.play()
 
                     # ensure only counts 1 collision per attack

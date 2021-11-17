@@ -1,6 +1,8 @@
 import pygame
 from src.constants import *
-from src import utility, sword, effect
+from src.utility import *
+from src.sword import Sword
+from src.effect import Effect
 
 
 class Player(pygame.sprite.Sprite):
@@ -43,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = GRAVITY
 
         self.attack = False
-        self.sword = sword.Sword(self.rect.x, self.rect.y, self.flip)
+        self.sword = Sword(self.rect.x, self.rect.y, self.flip)
 
         self.health = MAX_HEALTH
         self.max_health = self.health
@@ -59,7 +61,7 @@ class Player(pygame.sprite.Sprite):
         self.hurt_timer = None
 
         self.dust = pygame.sprite.GroupSingle()
-        self.run_dust = utility.load_images(f'{self.path}/dust_effect/run/*.png')
+        self.run_dust = load_images(f'{self.path}/dust_effect/run/*.png')
         self.run_frame = 0
         self.run_time = pygame.time.get_ticks()
 
@@ -68,7 +70,7 @@ class Player(pygame.sprite.Sprite):
         frame_type = [IDLE_IDX, RUN_IDX, DEAD_IDX, HIT_IDX,
                       ATTACK_IDX, JUMP_IDX]
         for animation in frame_type:
-            self.animation_dict[animation] = utility.load_images(
+            self.animation_dict[animation] = load_images(
                 f'{self.path}/player_{animation}/*.png', scale=2)
 
     def update(self, screen, lvl_shift, collidables, enemies):
@@ -87,17 +89,17 @@ class Player(pygame.sprite.Sprite):
         # Cant do anything when hurt
         if self.action != HIT_IDX and self.alive:
             if self.jumped:
-                utility.update_action(self, JUMP_IDX)
+                update_action(self, JUMP_IDX)
             elif self.direction.x:
-                utility.update_action(self, RUN_IDX)
+                update_action(self, RUN_IDX)
             elif self.attack:
-                utility.update_action(self, ATTACK_IDX)
+                update_action(self, ATTACK_IDX)
             else:
-                utility.update_action(self, IDLE_IDX)
+                update_action(self, IDLE_IDX)
 
         # dead
         elif not self.alive:
-            utility.update_action(self, DEAD_IDX)
+            update_action(self, DEAD_IDX)
 
     def invincibility_timer(self):
         # Grants n amount of time of invincibility after hurt
@@ -111,7 +113,7 @@ class Player(pygame.sprite.Sprite):
             if pygame.Rect.colliderect(self.hitbox, enemy.hitbox) and not self.attack:
                 # ensure only counts 1 collision
                 if enemy.alive and not self.collided and self.alive:
-                    utility.update_action(self, HIT_IDX)
+                    update_action(self, HIT_IDX)
                     self.hit_sound.play()
                     self.collided = True
                     self.health -= 1
@@ -167,12 +169,12 @@ class Player(pygame.sprite.Sprite):
 
     def get_dust(self):
         if self.action == JUMP_IDX and not self.in_air:
-            self.dust.add(effect.Effect(JUMP_IDX, self.hitbox.midbottom))
+            self.dust.add(Effect(JUMP_IDX, self.hitbox.midbottom))
             self.in_air = True
         if not self.dust:
             # landing from jumping or falling
             if (not self.jumped and self.in_air) or self.landed:
-                self.dust.add(effect.Effect(LAND_IDX, self.hitbox.midbottom))
+                self.dust.add(Effect(LAND_IDX, self.hitbox.midbottom))
                 self.jumped = False
                 self.landed = False
                 self.in_air = False

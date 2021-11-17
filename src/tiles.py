@@ -1,6 +1,6 @@
 import pygame
-from src import utility as u
-from src import constants as c
+from src.utility import *
+from src.constants import *
 
 
 class Tile(pygame.sprite.Sprite):
@@ -26,7 +26,7 @@ class StaticTile(Tile):
 class AnimatedTile(Tile):
     def __init__(self, size, pos, path):
         super().__init__(size, pos)
-        self.animation_list = u.load_images(path)
+        self.animation_list = load_images(path)
         self.frame_index = 0
         self.image = self.animation_list[self.frame_index]
 
@@ -40,7 +40,7 @@ class AnimatedTile(Tile):
     def animate(self):
         self.image = self.animation_list[self.frame_index]
         if (pygame.time.get_ticks() - self.current_time) > \
-                c.TILE_ANI:
+                TILE_ANI:
             self.current_time = pygame.time.get_ticks()
             self.frame_index += 1
 

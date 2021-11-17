@@ -1,7 +1,7 @@
 import pygame
 from csv import reader
 from pathlib import Path
-from src import constants as c
+from src.constants import *
 
 
 def load_image(file_path, scale=None, width=None, height=None):
@@ -70,18 +70,18 @@ def load_csv(path):
 
 def load_cut_graphics(path):
     img = pygame.image.load(path)
-    tile_num_x = int(img.get_size()[0] / c.TILE_SIZE)
-    tile_num_y = int(img.get_size()[1] / c.TILE_SIZE)
+    tile_num_x = int(img.get_size()[0] / TILE_SIZE)
+    tile_num_y = int(img.get_size()[1] / TILE_SIZE)
 
     cut_tiles = []
     for row in range(tile_num_y):
         for col in range(tile_num_x):
-            x = col * c.TILE_SIZE
-            y = row * c.TILE_SIZE
+            x = col * TILE_SIZE
+            y = row * TILE_SIZE
 
-            new_surf = pygame.Surface((c.TILE_SIZE, c.TILE_SIZE), flags=pygame.SRCALPHA)
+            new_surf = pygame.Surface((TILE_SIZE, TILE_SIZE), flags=pygame.SRCALPHA)
             new_surf.blit(img, (0, 0),
-                          pygame.Rect(x, y, c.TILE_SIZE, c.TILE_SIZE))
+                          pygame.Rect(x, y, TILE_SIZE, TILE_SIZE))
 
             cut_tiles.append(new_surf)
 

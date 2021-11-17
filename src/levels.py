@@ -11,9 +11,11 @@ from src.ui import UI
 
 path = 'assets/terrain'
 
+'''ADD NUMBER OF ENEMIES KILLED AND DISPLAY AT END SCREEN
+ALSO DISPLAY SCORE NOOB'''
 
 class Level:
-    def __init__(self, current_level, screen, create_overworld):
+    def __init__(self, current_level, screen, create_overworld, level_bg):
         self.screen = screen
         self.level_shift = 0
         self.score = 0
@@ -24,6 +26,15 @@ class Level:
         # Overworld connection
         self.current_level = current_level
         self.create_overworld = create_overworld
+
+        # Audio
+        self.level_bg = level_bg
+        self.coin_sound = pygame.mixer.Sound('assets/sound/effects/coin.wav')
+        self.potion_sound = pygame.mixer.Sound('assets/sound/effects/potion.wav')
+        self.death_sound = pygame.mixer.Sound('assets/sound/effects/oof.mp3')
+        self.coin_sound.set_volume(SOUND_VOLUME)
+        self.potion_sound.set_volume(SOUND_VOLUME)
+
 
         level_data = levels[self.current_level]
         self.new_max_level = level_data['unlock']
@@ -137,6 +148,12 @@ class Level:
                     end_surf = pygame.image.load(f'{path}/start_end/end.png')
                     self.goal = t.StaticTile(TILE_SIZE, (x, offset), end_surf)
 
+    def update_player_dust(self):
+        self.player.get_dust()
+        self.player.dust.update(self.level_shift)
+        self.player.dust.draw(self.screen)
+        self.player.animate_dust(self.screen)
+
     def scroll_level(self):
         player_x = self.player.hitbox.centerx
         direction_x = self.player.direction.x
@@ -152,17 +169,19 @@ class Level:
             self.level_shift = 0
 
     def check_item_collision(self):
-
         for item in self.items_sprites:
             if pygame.Rect.colliderect(self.player.hitbox, item.rect):
                 if item.item_type == DIAMOND1:
                     self.score += D1_SCORE
+                    self.coin_sound.play()
 
                 elif item.item_type == DIAMOND2:
                     self.score += D2_SCORE
+                    self.coin_sound.play()
 
                 elif item.item_type == HEALTH_POTION:
                     self.player.health = min(self.player.health+ HEAL_AMOUNT, MAX_HEALTH)
+                    self.potion_sound.play()
 
                 item.kill()
 
@@ -170,9 +189,11 @@ class Level:
         # timer starts when win or lose detected,
         if not self.end_screen_timer:
             if self.player.health <= 0 or self.player.hitbox.top > SCREEN_HEIGHT:
+                self.death_sound.play()
                 self.cleared_level = False
                 self.player.alive = False
                 self.end_screen_timer = pygame.time.get_ticks()
+                self.level_bg.stop()
 
             elif pygame.Rect.colliderect(self.player.hitbox, self.goal.rect):
                 self.cleared_level = True
@@ -197,6 +218,7 @@ class Level:
 
         if self.player.alive and not self.cleared_level:
             self.bg_palms_sprites.update(self.screen, self.level_shift)
+            self.update_player_dust()
             self.terrain_sprites.update(self.screen, self.level_shift)
             self.grass_sprites.update(self.screen, self.level_shift)
             self.items_sprites.update(self.screen, self.level_shift)

@@ -1,6 +1,7 @@
 import pygame
 from random import randint
-from src import constants as c, utility
+from src.constants import *
+from src import utility
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -8,8 +9,12 @@ class Enemy(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         super().__init__()
+
+        self.killed_sound = pygame.mixer.Sound('assets/sound/effects/enemy_die.wav')
+        self.killed_sound.set_volume(SOUND_VOLUME)
+
         self.animation_dict = {}
-        self.action = c.IDLE_IDX
+        self.action = IDLE_IDX
         self.current_time = pygame.time.get_ticks()
 
         self.frame_index = 0
@@ -20,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         self.idle_counter = 0
         self.move_right = False
         self.move_left = False
-        self.speed = c.ENEMY_SPEED
+        self.speed = ENEMY_SPEED
 
         self.alive = True
 
@@ -32,6 +37,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def check_alive(self):
         if self.health <= 0:
+            self.killed_sound.play()
             self.health = 0
             self.alive = False
 
@@ -51,11 +57,11 @@ class WeakEnemy(Enemy):
             self.check_alive()
 
         else:
-            utility.update_action(self, c.DEAD_IDX)
+            utility.update_action(self, DEAD_IDX)
             # kill after finish death animation and timer
             if self.frame_index == len(
                     self.animation_dict[self.action]) - 1 and (
-                    pygame.time.get_ticks() - self.current_time) > c.KILL_TIMER:
+                    pygame.time.get_ticks() - self.current_time) > KILL_TIMER:
                 self.kill()
 
         self.rect.x += shift
@@ -63,9 +69,9 @@ class WeakEnemy(Enemy):
         self.draw(screen)
 
     def ai(self, constraints):
-        if self.action == c.RUN_IDX:
+        if self.action == RUN_IDX:
             if randint(1, 300) == 1:
-                utility.update_action(self, c.IDLE_IDX)
+                utility.update_action(self, IDLE_IDX)
             else:
                 self.move()
 
@@ -75,18 +81,18 @@ class WeakEnemy(Enemy):
                     self.flip = not self.flip
 
             # if pygame.Rect.colliderect(self.vision, player_hitbox):
-            #     self.speed = c.ENEMY_SPEED_2
+            #     self.speed = ENEMY_SPEED_2
             # else:
-            #     self.speed = c.ENEMY_SPEED
+            #     self.speed = ENEMY_SPEED
 
-        elif self.action == c.IDLE_IDX:
+        elif self.action == IDLE_IDX:
             self.idle_counter += 1
-            if self.idle_counter >= c.IDLE_COUNTER:
+            if self.idle_counter >= IDLE_COUNTER:
                 self.idle_counter = 0
-                utility.update_action(self, c.RUN_IDX)
+                utility.update_action(self, RUN_IDX)
 
     def move(self):
-        utility.update_action(self, c.RUN_IDX)
+        utility.update_action(self, RUN_IDX)
 
         # update rectangle position
         self.rect.x += (self.direction * self.speed)
@@ -103,11 +109,11 @@ class WeakEnemy(Enemy):
         # reset frame index
         if self.frame_index >= len(self.animation_dict[self.action]):
             # only play dead / hurt animation once
-            if self.action == c.DEAD_IDX:
+            if self.action == DEAD_IDX:
                 self.frame_index = len(
                     self.animation_dict[self.action]) - 1
-            elif self.action == c.HIT_IDX:
-                utility.update_action(self, c.RUN_IDX)
+            elif self.action == HIT_IDX:
+                utility.update_action(self, RUN_IDX)
                 self.frame_index = 0
             else:
                 self.frame_index = 0
@@ -116,12 +122,12 @@ class WeakEnemy(Enemy):
 class Slime(WeakEnemy):
     def __init__(self, x, y):
         super().__init__(x, y)
-        frame_type = [c.IDLE_IDX, c.RUN_IDX, c.DEAD_IDX, c.HIT_IDX]
+        frame_type = [IDLE_IDX, RUN_IDX, DEAD_IDX, HIT_IDX]
         self.load_images(frame_types=frame_type, enemy_name='slime', scale=1.2)
 
         self.cooldowns = {
-            c.IDLE_IDX: c.IDLE_ANI, c.RUN_IDX: c.RUN_ANI,
-            c.DEAD_IDX: c.DEAD_ANI, c.HIT_IDX: c.HURT_ANI
+            IDLE_IDX: IDLE_ANI, RUN_IDX: RUN_ANI,
+            DEAD_IDX: DEAD_ANI, HIT_IDX: HURT_ANI
         }
         self.image = self.animation_dict[self.action][self.frame_index]
         self.rect = self.image.get_rect(midtop=(x, y))
@@ -146,11 +152,11 @@ class Slime(WeakEnemy):
 class Worm(WeakEnemy):
     def __init__(self, x, y):
         super().__init__(x, y)
-        frame_type = [c.IDLE_IDX, c.RUN_IDX, c.DEAD_IDX]
+        frame_type = [IDLE_IDX, RUN_IDX, DEAD_IDX]
         self.load_images(frame_types=frame_type, enemy_name='worm', scale=1.2)
 
         self.cooldowns = {
-            c.IDLE_IDX: c.IDLE_ANI, c.RUN_IDX: c.RUN_ANI, c.DEAD_IDX: c.DEAD_ANI
+            IDLE_IDX: IDLE_ANI, RUN_IDX: RUN_ANI, DEAD_IDX: DEAD_ANI
         }
         self.image = self.animation_dict[self.action][self.frame_index]
         self.rect = self.image.get_rect(midtop=(x, y))

@@ -1,11 +1,6 @@
 import pygame
-from src import constants as c, utility, sword, effect
-
-'''
-ADD DEATH TIMER SO WONT RETURN TO OVERWORLD ONCE HEALTH = 0
-MAYBE WAIT 3 -5 SEC BEFORE RETURNING
-
-'''
+from src.constants import *
+from src import utility, sword, effect
 
 
 class Player(pygame.sprite.Sprite):
@@ -13,19 +8,24 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, pos):
         super().__init__()
+        # audio
+        self.jump_sound = pygame.mixer.Sound('assets/sound/effects/jump.wav')
+        self.hit_sound = pygame.mixer.Sound('assets/sound/effects/hit.wav')
+        self.jump_sound.set_volume(SOUND_VOLUME)
+
         # animations
         self.animation_dict = {}
         self.load_images()
         self.cooldowns = {
-            c.IDLE_IDX: c.IDLE_ANI, c.RUN_IDX: c.RUN_ANI,
-            c.DEAD_IDX: c.DEAD_ANI, c.HIT_IDX: c.HURT_ANI,
-            c.ATTACK_IDX: c.ATTACK_ANI, c.JUMP_IDX: c.JUMP_ANI
+            IDLE_IDX: IDLE_ANI, RUN_IDX: RUN_ANI,
+            DEAD_IDX: DEAD_ANI, HIT_IDX: HURT_ANI,
+            ATTACK_IDX: ATTACK_ANI, JUMP_IDX: JUMP_ANI
         }
         self.current_time = pygame.time.get_ticks()
         self.frame_index = 0
-        self.action = c.IDLE_IDX
+        self.action = IDLE_IDX
         self.image = self.animation_dict[self.action][self.frame_index]
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(center=pos)
         self.flip = False
 
         # movement
@@ -38,19 +38,19 @@ class Player(pygame.sprite.Sprite):
         self.jumped = False
         self.landed = False
         self.vel_y = 0
-        self.speed = c.WALK_SPEED
-        self.jump_vel = c.JUMP_VEL
-        self.gravity = c.GRAVITY
+        self.speed = WALK_SPEED
+        self.jump_vel = JUMP_VEL
+        self.gravity = GRAVITY
 
         self.attack = False
         self.sword = sword.Sword(self.rect.x, self.rect.y, self.flip)
 
-        self.health = c.MAX_HEALTH
+        self.health = MAX_HEALTH
         self.max_health = self.health
 
         self.alive = True
         self.hitbox_width, self.hitbox_height = 35, 40
-        self.hitbox = pygame.rect.Rect(self.rect.x, self.rect.y, self.hitbox_width, self.hitbox_height)
+        self.hitbox = pygame.rect.Rect(self.rect.center, (self.hitbox_width, self.hitbox_height))
 
         self.tmp_hitbox = self.hitbox
         self.area = ()
@@ -65,8 +65,8 @@ class Player(pygame.sprite.Sprite):
 
     def load_images(self):
         # add frames to animation list
-        frame_type = [c.IDLE_IDX, c.RUN_IDX, c.DEAD_IDX, c.HIT_IDX,
-                      c.ATTACK_IDX, c.JUMP_IDX]
+        frame_type = [IDLE_IDX, RUN_IDX, DEAD_IDX, HIT_IDX,
+                      ATTACK_IDX, JUMP_IDX]
         for animation in frame_type:
             self.animation_dict[animation] = utility.load_images(
                 f'{self.path}/player_{animation}/*.png', scale=2)
@@ -80,34 +80,29 @@ class Player(pygame.sprite.Sprite):
         self.animate()
         self.draw(screen)
 
-        self.get_dust()
-        self.dust.update(lvl_shift)
-        self.dust.draw(screen)
-        self.animate_dust(screen)
-
         if self.attack:
             self.attacking(enemies, screen)
 
     def get_action(self):
         # Cant do anything when hurt
-        if self.action != c.HIT_IDX and self.alive:
+        if self.action != HIT_IDX and self.alive:
             if self.jumped:
-                utility.update_action(self, c.JUMP_IDX)
+                utility.update_action(self, JUMP_IDX)
             elif self.direction.x:
-                utility.update_action(self, c.RUN_IDX)
+                utility.update_action(self, RUN_IDX)
             elif self.attack:
-                utility.update_action(self, c.ATTACK_IDX)
+                utility.update_action(self, ATTACK_IDX)
             else:
-                utility.update_action(self, c.IDLE_IDX)
+                utility.update_action(self, IDLE_IDX)
 
         # dead
         elif not self.alive:
-            utility.update_action(self, c.DEAD_IDX)
+            utility.update_action(self, DEAD_IDX)
 
     def invincibility_timer(self):
         # Grants n amount of time of invincibility after hurt
         if self.hurt_timer and (
-                pygame.time.get_ticks() - self.hurt_timer) >= c.HURT_TIMER:
+                pygame.time.get_ticks() - self.hurt_timer) >= HURT_TIMER:
             self.hurt_timer = None
             self.collided = False
 
@@ -116,7 +111,8 @@ class Player(pygame.sprite.Sprite):
             if pygame.Rect.colliderect(self.hitbox, enemy.hitbox) and not self.attack:
                 # ensure only counts 1 collision
                 if enemy.alive and not self.collided and self.alive:
-                    utility.update_action(self, c.HIT_IDX)
+                    utility.update_action(self, HIT_IDX)
+                    self.hit_sound.play()
                     self.collided = True
                     self.health -= 1
                     self.hurt_timer = pygame.time.get_ticks()
@@ -170,31 +166,27 @@ class Player(pygame.sprite.Sprite):
         self.sword.update(enemies, screen, self.hitbox.x, self.hitbox.y, self.flip, self.frame_index)
 
     def get_dust(self):
-        if self.action == c.JUMP_IDX and not self.in_air:
-            self.dust.add(effect.Effect(c.JUMP_IDX, self.hitbox.midbottom))
+        if self.action == JUMP_IDX and not self.in_air:
+            self.dust.add(effect.Effect(JUMP_IDX, self.hitbox.midbottom))
             self.in_air = True
         if not self.dust:
             # landing from jumping or falling
             if (not self.jumped and self.in_air) or self.landed:
-                self.dust.add(effect.Effect(c.LAND_IDX, self.hitbox.midbottom))
+                self.dust.add(effect.Effect(LAND_IDX, self.hitbox.midbottom))
                 self.jumped = False
                 self.landed = False
                 self.in_air = False
 
     def adjust_hitbox(self):
-        if self.flip:
-            self.area = (0, 15, 50, self.hitbox_height)
-        else:
-            self.area = (15, 15, 50, self.hitbox_height)
+        self.area = (15, 15, self.hitbox.width, self.hitbox_height)
+        self.tmp_hitbox = self.hitbox
 
-        if not self.attack:
-            self.area = (15, 15, self.hitbox.width, self.hitbox_height)
-
-        if self.flip and self.attack:
-            self.tmp_hitbox = (self.hitbox.left-15, self.hitbox.top, self.hitbox.width,self.hitbox.height)
-
-        else:
-            self.tmp_hitbox = self.hitbox
+        if self.attack:
+            if self.flip:
+                self.area = (0, 15, 64, self.hitbox_height)
+                self.tmp_hitbox = (self.hitbox.left-15, self.hitbox.top, 64, self.hitbox.height)
+            else:
+                self.area = (15, 15, 64, self.hitbox_height)
 
     def animate(self):
         # increment frame index based on action's cooldown
@@ -208,21 +200,22 @@ class Player(pygame.sprite.Sprite):
         if self.frame_index >= len(self.animation_dict[self.action]):
             self.frame_index = 0
             # only play player_attack animation once per key pressed
-            if self.action == c.ATTACK_IDX:
+            if self.action == ATTACK_IDX:
                 self.attack = False
                 self.sword.collided = False
-            elif self.action == c.HIT_IDX:
-                self.action = c.IDLE_IDX
-            elif self.action == c.DEAD_IDX:
+                self.sword.swung = False
+            elif self.action == HIT_IDX:
+                self.action = IDLE_IDX
+            elif self.action == DEAD_IDX:
                 self.frame_index = len(
                     self.animation_dict[self.action]) - 1
 
         self.adjust_hitbox()
 
     def animate_dust(self, screen):
-        if self.action == c.RUN_IDX:
+        if self.action == RUN_IDX:
             dust_img = pygame.transform.flip(self.run_dust[self.run_frame], self.flip, False)
-            if (pygame.time.get_ticks() - self.run_time) > c.DUST_ANI:
+            if (pygame.time.get_ticks() - self.run_time) > DUST_ANI:
                 self.run_time = pygame.time.get_ticks()
                 self.run_frame += 1
             if self.run_frame >= len(self.run_dust):
@@ -242,7 +235,7 @@ class Player(pygame.sprite.Sprite):
         else:
             screen.blit(img, self.tmp_hitbox)
 
-        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        pygame.draw.rect(screen, 'red', self.hitbox, 1)
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -264,6 +257,7 @@ class Player(pygame.sprite.Sprite):
                 self.jumping()
                 self.jumped = True
                 self.attack = False
+                self.jump_sound.play()
 
             if keys[pygame.K_SPACE]:
                 self.attack = True

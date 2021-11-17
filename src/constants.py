@@ -37,7 +37,8 @@ TILE_ANI = 200
 # Timers
 KILL_TIMER = 500            # kill sprite
 HURT_TIMER = 1000           # 1 second of invisibility after hurt
-ENDSCREEN_TIMER = 5000     # displays text after winning or losing level
+ENDSCREEN_TIMER = 5000      # displays text after winning or losing level
+OVERWORLD_TIMER = 1000       # pause when transitioning between lvl & overworld
 
 # Enemy Constants
 ENEMY_SPEED = 1
@@ -62,3 +63,5 @@ D2_SCORE = 5
 HEAL_AMOUNT = 3
 
 SKY_HORIZON = 5
+
+SOUND_VOLUME = 0.2

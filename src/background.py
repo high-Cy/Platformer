@@ -31,9 +31,9 @@ class Sky:
 
 class Water:
     def __init__(self, top, level_width):
-        water_start = SCREEN_WIDTH
+        water_start = -SCREEN_WIDTH
         water_width = 192
-        num_tiles = int((level_width + SCREEN_WIDTH) / water_width)
+        num_tiles = int((level_width + SCREEN_WIDTH) / water_width) + 10
         self.water_sprites = pygame.sprite.Group()
 
         for tile in range(num_tiles):
@@ -49,7 +49,7 @@ class Water:
 class Clouds:
     def __init__(self, horizon, level_width, cloud_number):
         cloud_list = load_images(f'{path}/clouds/*.png')
-        min_x = SCREEN_WIDTH
+        min_x = -SCREEN_WIDTH
         max_x = level_width + SCREEN_WIDTH
         min_y = 0
         max_y = horizon

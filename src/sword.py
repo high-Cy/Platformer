@@ -10,7 +10,6 @@ class Sword(pygame.sprite.Sprite):
         super().__init__()
         self.stab_sound = pygame.mixer.Sound('assets/sound/effects/stab.mp3')
         self.swing_sound = pygame.mixer.Sound('assets/sound/effects/swing.mp3')
-        self.stab_sound.set_volume(SOUND_VOLUME)
 
         self.rect = pygame.Rect(x, y, 29, 39)
         self.flip = flip

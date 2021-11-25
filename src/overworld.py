@@ -46,9 +46,13 @@ class OverworldIcon(pygame.sprite.Sprite):
         self.image = pygame.transform.scale2x(
             pygame.image.load('assets/player/player_idle/idle-1.png')).convert_alpha()
         self.rect = self.image.get_rect(center=pos)
+        self.flip = False
 
-    def update(self):
+    def update(self, screen):
         self.rect.center = self.pos
+
+        img = pygame.transform.flip(self.image, self.flip, False)
+        screen.blit(img, self.rect)
 
 
 class Overworld:
@@ -109,11 +113,15 @@ class Overworld:
                 self.move_direction = self.get_movement_data(is_next=True)
                 self.current_level += 1
                 self.moving = True
+                self.icon.sprite.flip = False
+
             elif (keys[pygame.K_LEFT] or keys[pygame.K_a]) and \
                     self.current_level > 0:
                 self.move_direction = self.get_movement_data(is_next=False)
                 self.current_level -= 1
                 self.moving = True
+                self.icon.sprite.flip = True
+
             elif keys[pygame.K_SPACE]:
                 self.create_level(self.current_level)
 
@@ -142,10 +150,10 @@ class Overworld:
         self.input_timer()
         self.get_input()
         self.move_icon()
-        self.icon.update()
         self.nodes.update()
 
         self.sky.draw(self.screen)
         self.draw_path()
         self.nodes.draw(self.screen)
-        self.icon.draw(self.screen)
+        self.icon.update(self.screen)
+

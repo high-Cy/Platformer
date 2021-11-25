@@ -52,7 +52,7 @@ class Palm(AnimatedTile):
     def __init__(self, size, pos, path, offset):
         super().__init__(size, pos, path)
         offset_y = pos[1] - offset
-        self.rect.topleft = (pos[0], offset_y)
+        self.rect.topleft = (pos[0]-30, offset_y)
 
 
 class Item(StaticTile):

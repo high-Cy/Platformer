@@ -3,7 +3,7 @@ from src.constants import *
 from src.utility import *
 from src.tiles import StaticTile, Tile, Palm, Item
 from src.player import Player
-from src.enemy import Slime, Worm
+from src.enemy import Slime, Worm, Jaw,Lopi, Candy
 from src.background import Sky, Water, Clouds
 from src.ui import UI
 from src.level_data import levels
@@ -96,10 +96,10 @@ class Level:
                     if type == 'fg palms':
                         if val == '1':
                             sprite = Palm(TILE_SIZE, (x, y),
-                                          f'{path}/palm_large/*.png', 38)
+                                          f'{path}/palm_large/*.png', 65)
                         if val == '2':
                             sprite = Palm(TILE_SIZE, (x, y),
-                                          f'{path}/palm_small/*.png', 38)
+                                          f'{path}/palm_small/*.png', 40)
 
                     if type == 'bg palms':
                         sprite = Palm(TILE_SIZE, (x, y),
@@ -128,6 +128,12 @@ class Level:
                             sprite = Slime(x, y)
                         if val == '2':
                             sprite = Worm(x, y)
+                        if val == '3':
+                            sprite = Jaw(x,y)
+                        if val == '4':
+                            sprite = Lopi(x,y)
+                        if val == '5':
+                            sprite = Candy(x,y)
 
                     if type == 'constraints':
                         sprite = Tile(TILE_SIZE, (x, y))
@@ -231,7 +237,8 @@ class Level:
             self.grass_sprites.update(self.screen, self.level_shift)
             self.items_sprites.update(self.screen, self.level_shift)
             self.enemy_sprites.update(self.screen, self.level_shift,
-                                      self.constraint_sprites)
+                                      self.constraint_sprites,
+                                      self.player.hitbox)
             self.fg_palms_sprites.update(self.screen, self.level_shift)
             self.goal.update(self.screen, self.level_shift)
             self.water.update(self.screen, self.level_shift)

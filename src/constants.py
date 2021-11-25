@@ -27,7 +27,7 @@ LAND_IDX = 'land'
 # Animation Cooldowns
 IDLE_ANI = 200
 RUN_ANI = 100
-DEAD_ANI = 300
+DEAD_ANI = 500
 HURT_ANI = 100
 ATTACK_ANI = 100
 JUMP_ANI = 0
@@ -43,6 +43,7 @@ OVERWORLD_TIMER = 1000       # pause when transitioning between lvl & overworld
 # Enemy Constants
 ENEMY_SPEED = 1
 ENEMY_SPEED_2 = 2
+ENEMY_DEAD_ANI = 400
 RUN_ANI_2 = 400
 MOVE_COUNTER = 50
 IDLE_COUNTER = 50

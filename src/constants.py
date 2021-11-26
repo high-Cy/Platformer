@@ -38,7 +38,7 @@ TILE_ANI = 200
 KILL_TIMER = 500            # kill sprite
 HURT_TIMER = 1000           # 1 second of invisibility after hurt
 ENDSCREEN_TIMER = 5000      # displays text after winning or losing level
-OVERWORLD_TIMER = 1000       # pause when transitioning between lvl & overworld
+OVERWORLD_TIMER = 1000      # pause when transitioning between lvl & overworld
 
 # Enemy Constants
 ENEMY_SPEED = 1

@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 from src.constants import *
 from src.utility import *
 from src.tiles import StaticTile, Tile, Palm, Item
@@ -29,6 +29,7 @@ class Level:
 
         # Audio
         self.level_bg = level_bg
+        self.bg_playing = True
         self.coin_sound = pygame.mixer.Sound('assets/sound/effects/coin.wav')
         self.potion_sound = pygame.mixer.Sound(
             'assets/sound/effects/potion.wav')
@@ -224,7 +225,22 @@ class Level:
             else:
                 self.ui.display_end_screen(self.cleared_level)
 
+    def get_input(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_ESCAPE]:
+            pygame.quit()
+            sys.exit()
+        if keys[pygame.K_m] and self.bg_playing:
+            self.level_bg.stop()
+            self.bg_playing = False
+
+        if keys[pygame.K_n] and not self.bg_playing:
+            self.level_bg.play(loops=-1)
+            self.bg_playing = True
+
     def run(self):
+        self.get_input()
         self.scroll_level()
         self.constraint_sprites.update(self.screen, self.level_shift)
         self.sky.draw(self.screen)

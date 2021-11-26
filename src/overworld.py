@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 from src.level_data import levels
 from src.utility import load_images
 from src.background import Sky
@@ -56,11 +56,13 @@ class OverworldIcon(pygame.sprite.Sprite):
 
 
 class Overworld:
-    def __init__(self, start_level, max_level, screen, create_level):
+    def __init__(self, start_level, max_level, screen, create_level, overworld_bg):
         self.screen = screen
         self.max_level = max_level
         self.current_level = start_level
         self.create_level = create_level
+        self.overworld_bg = overworld_bg
+        self.bg_playing = True
 
         self.moving = False
         self.move_direction = pygame.Vector2(0, 0)
@@ -124,6 +126,17 @@ class Overworld:
 
             elif keys[pygame.K_SPACE]:
                 self.create_level(self.current_level)
+
+        if keys[pygame.K_ESCAPE]:
+            pygame.quit()
+            sys.exit()
+        if keys[pygame.K_m] and self.bg_playing:
+            self.overworld_bg.play()
+            self.bg_playing = False
+
+        if keys[pygame.K_n] and not self.bg_playing:
+            self.overworld_bg.play(loops=-1)
+            self.bg_playing = True
 
     def move_icon(self):
         if self.moving and self.move_direction:

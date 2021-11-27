@@ -220,8 +220,7 @@ class Level:
     def end_screen(self):
         # display end screen
         if self.end_screen_timer:
-            if (
-                    pygame.time.get_ticks() - self.end_screen_timer) >= ENDSCREEN_TIMER:
+            if (pygame.time.get_ticks() - self.end_screen_timer) >= ENDSCREEN_TIMER:
                 if self.cleared_level:
                     self.create_overworld(self.current_level,
                                           self.new_max_level)

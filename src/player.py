@@ -239,7 +239,7 @@ class Player(pygame.sprite.Sprite):
         else:
             screen.blit(img, self.tmp_hitbox)
 
-        pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
 
     def get_input(self, muted):
         keys = pygame.key.get_pressed()

@@ -45,11 +45,15 @@ class UI:
         amount_rect = amount_surf.get_rect(center=(SCREEN_WIDTH/2 +25, SCREEN_HEIGHT/2+70))
         self.screen.blit(amount_surf, amount_rect)
 
-
     def display_mute(self):
         txt = self.font10.render('M/N – mute/unmute', False, 'red')
         txt_rect = txt.get_rect(topleft=(20, 670))
         self.screen.blit(txt, txt_rect)
         self.screen.blit(self.mute_img, self.mute_img_rect)
+
+    def display_level(self, level):
+        txt = self.font30.render(f'Level {level}', False, '#33323d')
+        txt_rect = txt.get_rect(center=(SCREEN_WIDTH/2, 25))
+        self.screen.blit(txt, txt_rect)
 
 

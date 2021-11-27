@@ -6,7 +6,7 @@ from src.overworld import Overworld
 
 class Game:
     def __init__(self):
-        self.max_level = 0
+        self.max_level = 5
 
         self.level_bg = pygame.mixer.Sound('assets/sound/level_music.wav')
         self.overworld_bg = pygame.mixer.Sound('assets/sound/overworld_music.wav')
@@ -44,6 +44,8 @@ class Game:
 # Pygame setup
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption(CAPTION)
+pygame.display.set_icon(pygame.image.load('assets/player/player_jump/jump-1.png'))
 clock = pygame.time.Clock()
 
 game = Game()

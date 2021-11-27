@@ -277,4 +277,5 @@ class Level:
                            self.enemy_sprites, self.muted)
 
         self.ui.display_mute()
+        self.ui.display_level(self.current_level+1)
         self.end_screen()

@@ -198,8 +198,8 @@ class Slime(WeakEnemy):
         self.vision.center = (
             self.rect.centerx + 75 * self.direction, self.rect.centery + 5)
 
-        pygame.draw.rect(screen, 'red', self.hitbox, 1)
-        pygame.draw.rect(screen, 'blue', self.vision, 2)
+        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        # pygame.draw.rect(screen, 'blue', self.vision, 2)
 
 
 class Worm(WeakEnemy):
@@ -224,8 +224,8 @@ class Worm(WeakEnemy):
         self.vision.center = (
             self.rect.centerx + 75 * self.direction, self.rect.centery + 3)
 
-        pygame.draw.rect(screen, 'red', self.hitbox, 1)
-        pygame.draw.rect(screen, 'blue', self.vision, 2)
+        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        # pygame.draw.rect(screen, 'blue', self.vision, 2)
 
 
 class Jaw(WeakEnemy):
@@ -250,8 +250,8 @@ class Jaw(WeakEnemy):
         self.vision.center = (
             self.rect.centerx + 75 * self.direction, self.rect.centery - 5)
 
-        pygame.draw.rect(screen, 'red', self.hitbox, 1)
-        pygame.draw.rect(screen, 'blue', self.vision, 2)
+        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        # pygame.draw.rect(screen, 'blue', self.vision, 2)
 
 
 class Lopi(StrongEnemy):
@@ -295,8 +295,8 @@ class Lopi(StrongEnemy):
         self.vision.center = (
             self.rect.centerx + 20 * self.direction, self.rect.centery + 8)
 
-        pygame.draw.rect(screen, 'red', self.hitbox, 1)
-        pygame.draw.rect(screen, 'blue', self.vision, 2)
+        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        # pygame.draw.rect(screen, 'blue', self.vision, 2)
 
 
 class Candy(StrongEnemy):
@@ -341,5 +341,5 @@ class Candy(StrongEnemy):
         self.vision.center = (
             self.rect.centerx + 5 * self.direction, self.rect.centery)
 
-        pygame.draw.rect(screen, 'red', self.hitbox, 1)
-        pygame.draw.rect(screen, 'blue', self.vision, 2)
+        # pygame.draw.rect(screen, 'red', self.hitbox, 1)
+        # pygame.draw.rect(screen, 'blue', self.vision, 2)

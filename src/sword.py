@@ -50,4 +50,4 @@ class Sword(pygame.sprite.Sprite):
         else:
             self.hitbox = pygame.Rect(x + 27, y + 20, 28, 20)
 
-        pygame.draw.rect(surf, 'red', self.hitbox, 1)
+        # pygame.draw.rect(surf, 'red', self.hitbox, 1)

@@ -73,17 +73,17 @@ class Player(pygame.sprite.Sprite):
             self.animation_dict[animation] = load_images(
                 f'{self.path}/player_{animation}/*.png', scale=2)
 
-    def update(self, screen, lvl_shift, collidables, enemies):
-        self.get_input()
+    def update(self, screen, lvl_shift, collidables, enemies, muted):
+        self.get_input(muted)
         self.get_action()
         self.movement(collidables)
-        self.check_collision(enemies)
+        self.check_collision(enemies,muted)
         self.invincibility_timer()
         self.animate()
         self.draw(screen)
 
         if self.attack:
-            self.attacking(enemies, screen)
+            self.attacking(enemies, screen, muted)
 
     def get_action(self):
         # Cant do anything when hurt
@@ -108,16 +108,18 @@ class Player(pygame.sprite.Sprite):
             self.hurt_timer = None
             self.collided = False
 
-    def check_collision(self, enemy_group):
+    def check_collision(self, enemy_group, muted):
         for enemy in enemy_group:
             if pygame.Rect.colliderect(self.hitbox, enemy.hitbox) and not self.attack:
                 # ensure only counts 1 collision
                 if enemy.alive and not self.collided and self.alive:
                     update_action(self, HIT_IDX)
-                    self.hit_sound.play()
                     self.collided = True
                     self.health -= 1
                     self.hurt_timer = pygame.time.get_ticks()
+
+                    if not muted:
+                        self.hit_sound.play()
 
                 if self.health <= 0:
                     self.health = 0
@@ -164,8 +166,8 @@ class Player(pygame.sprite.Sprite):
     def jumping(self):
         self.direction.y = self.jump_vel
 
-    def attacking(self, enemies, screen):
-        self.sword.update(enemies, screen, self.hitbox.x, self.hitbox.y, self.flip, self.frame_index)
+    def attacking(self, enemies, screen,muted):
+        self.sword.update(enemies, screen, self.hitbox.x, self.hitbox.y, self.flip, self.frame_index, muted)
 
     def get_dust(self):
         if self.action == JUMP_IDX and not self.in_air:
@@ -239,7 +241,7 @@ class Player(pygame.sprite.Sprite):
 
         pygame.draw.rect(screen, 'red', self.hitbox, 1)
 
-    def get_input(self):
+    def get_input(self, muted):
         keys = pygame.key.get_pressed()
 
         if self.alive:
@@ -259,7 +261,8 @@ class Player(pygame.sprite.Sprite):
                 self.jumping()
                 self.jumped = True
                 self.attack = False
-                self.jump_sound.play()
+                if not muted:
+                    self.jump_sound.play()
 
             if keys[pygame.K_SPACE]:
                 self.attack = True

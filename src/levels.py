@@ -30,6 +30,7 @@ class Level:
         # Audio
         self.level_bg = level_bg
         self.bg_playing = True
+        self.muted = False
         self.coin_sound = pygame.mixer.Sound('assets/sound/effects/coin.wav')
         self.potion_sound = pygame.mixer.Sound(
             'assets/sound/effects/potion.wav')
@@ -37,8 +38,7 @@ class Level:
         self.win_sound = pygame.mixer.Sound('assets/sound/effects/win.wav')
         self.coin_sound.set_volume(SOUND_VOLUME)
         # self.potion_sound.set_volume(SOUND_VOLUME)
-        self.win_sound.set_volume(SOUND_VOLUME
-                                  )
+        self.win_sound.set_volume(SOUND_VOLUME)
 
         level_data = levels[self.current_level]
         self.new_max_level = level_data['unlock']
@@ -183,16 +183,19 @@ class Level:
             if pygame.Rect.colliderect(self.player.hitbox, item.rect):
                 if item.item_type == DIAMOND1:
                     self.score += D1_SCORE
-                    self.coin_sound.play()
+                    if not self.muted:
+                        self.coin_sound.play()
 
                 elif item.item_type == DIAMOND2:
                     self.score += D2_SCORE
-                    self.coin_sound.play()
+                    if not self.muted:
+                        self.coin_sound.play()
 
                 elif item.item_type == HEALTH_POTION:
                     self.player.health = min(self.player.health + HEAL_AMOUNT,
                                              MAX_HEALTH)
-                    self.potion_sound.play()
+                    if not self.muted:
+                        self.potion_sound.play()
 
                 item.kill()
 
@@ -200,14 +203,16 @@ class Level:
         # timer starts when win or lose detected,
         if not self.end_screen_timer:
             if self.player.health <= 0 or self.player.hitbox.top > SCREEN_HEIGHT:
-                self.death_sound.play()
+                if not self.muted:
+                    self.death_sound.play()
                 self.cleared_level = False
                 self.player.alive = False
                 self.end_screen_timer = pygame.time.get_ticks()
                 self.level_bg.stop()
 
             elif pygame.Rect.colliderect(self.player.hitbox, self.goal.rect):
-                self.win_sound.play()
+                if not self.muted:
+                    self.win_sound.play()
                 self.cleared_level = True
                 self.end_screen_timer = pygame.time.get_ticks()
                 self.level_bg.stop()
@@ -223,7 +228,7 @@ class Level:
                 else:
                     self.create_overworld(self.current_level, 0)
             else:
-                self.ui.display_end_screen(self.cleared_level)
+                self.ui.display_end_screen(self.cleared_level, self.score)
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -234,10 +239,12 @@ class Level:
         if keys[pygame.K_m] and self.bg_playing:
             self.level_bg.stop()
             self.bg_playing = False
+            self.muted = True
 
         if keys[pygame.K_n] and not self.bg_playing:
             self.level_bg.play(loops=-1)
             self.bg_playing = True
+            self.muted = False
 
     def run(self):
         self.get_input()
@@ -254,7 +261,7 @@ class Level:
             self.items_sprites.update(self.screen, self.level_shift)
             self.enemy_sprites.update(self.screen, self.level_shift,
                                       self.constraint_sprites,
-                                      self.player.hitbox)
+                                      self.player.hitbox, self.muted)
             self.fg_palms_sprites.update(self.screen, self.level_shift)
             self.goal.update(self.screen, self.level_shift)
             self.water.update(self.screen, self.level_shift)
@@ -267,6 +274,7 @@ class Level:
 
         collidables = self.terrain_sprites.sprites() + self.fg_palms_sprites.sprites()
         self.player.update(self.screen, self.level_shift, collidables,
-                           self.enemy_sprites)
+                           self.enemy_sprites, self.muted)
 
+        self.ui.display_mute()
         self.end_screen()

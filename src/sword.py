@@ -18,15 +18,16 @@ class Sword(pygame.sprite.Sprite):
         self.collided = False
         self.hitbox = pygame.Rect(x + 39, y + 33, 26, 18)
 
-    def update(self, enemies, screen, x, y, flip, attack_frame):
-        self.check_collision(enemies, attack_frame)
+    def update(self, enemies, screen, x, y, flip, attack_frame, muted):
+        self.check_collision(enemies, attack_frame, muted)
         self.draw(screen, x, y, flip)
 
-    def check_collision(self, enemy_group, attack_frame):
+    def check_collision(self, enemy_group, attack_frame, muted):
         # sword comes out frame 2
         if not self.collided and attack_frame >= 2:
             if not self.swung:
-                self.swing_sound.play()
+                if not muted:
+                    self.swing_sound.play()
                 self.swung = True
             for enemy in enemy_group:
                 if pygame.Rect.colliderect(self.hitbox,
@@ -34,7 +35,8 @@ class Sword(pygame.sprite.Sprite):
                     # to play hurt animation
                     if enemy.health > 1:
                         update_action(enemy, HIT_IDX)
-                        self.stab_sound.play()
+                        if not muted:
+                            self.stab_sound.play()
 
                     # ensure only counts 1 collision per attack
                     if not self.collided:

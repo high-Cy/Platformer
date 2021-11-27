@@ -3,6 +3,7 @@ from src.level_data import levels
 from src.utility import load_images
 from src.background import Sky
 from src.constants import *
+from src.ui import UI
 
 
 class Node(pygame.sprite.Sprite):
@@ -63,6 +64,9 @@ class Overworld:
         self.create_level = create_level
         self.overworld_bg = overworld_bg
         self.bg_playing = True
+
+        # UI
+        self.ui = UI(self.screen)
 
         self.moving = False
         self.move_direction = pygame.Vector2(0, 0)
@@ -131,7 +135,7 @@ class Overworld:
             pygame.quit()
             sys.exit()
         if keys[pygame.K_m] and self.bg_playing:
-            self.overworld_bg.play()
+            self.overworld_bg.stop()
             self.bg_playing = False
 
         if keys[pygame.K_n] and not self.bg_playing:
@@ -169,4 +173,4 @@ class Overworld:
         self.draw_path()
         self.nodes.draw(self.screen)
         self.icon.update(self.screen)
-
+        self.ui.display_mute()

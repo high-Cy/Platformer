@@ -36,10 +36,10 @@ class Enemy(pygame.sprite.Sprite):
             self.animation_dict[animation] = load_images(
                 f'{img_path}/{animation}/*.png', scale=scale)
 
-    def update(self, screen, shift, constraints, player_hitbox):
+    def update(self, screen, shift, constraints, player_hitbox, muted):
         if self.alive:
             self.ai(constraints, player_hitbox)
-            self.check_alive()
+            self.check_alive(muted)
 
         else:
             update_action(self, DEAD_IDX)
@@ -65,18 +65,19 @@ class Enemy(pygame.sprite.Sprite):
             # update rectangle position
             self.rect.x += (self.direction * self.speed)
 
-
     def idle_count(self):
         self.idle_counter += 1
         if self.idle_counter >= IDLE_COUNTER:
             self.idle_counter = 0
             update_action(self, RUN_IDX)
 
-    def check_alive(self):
+    def check_alive(self, muted):
         if self.health <= 0:
-            self.killed_sound.play()
             self.health = 0
             self.alive = False
+
+            if not muted:
+                self.killed_sound.play()
 
     def draw(self, screen):
         img = pygame.transform.flip(self.image, self.flip, False)

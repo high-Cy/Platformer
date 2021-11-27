@@ -14,7 +14,7 @@ class Game:
         self.overworld_bg.set_volume(SOUND_VOLUME)
 
         # overworld
-        self.overworld = Overworld(0, self.max_level, screen, self.create_level)
+        self.overworld = Overworld(0, self.max_level, screen, self.create_level, self.overworld_bg)
         self.level = None
         self.is_overworld = True
         self.overworld_bg.play(loops=-1)
@@ -29,11 +29,10 @@ class Game:
         if new_max_level > self.max_level:
             self.max_level = new_max_level
         self.overworld = Overworld(current_level, self.max_level, screen,
-                                   self.create_level)
+                                   self.create_level, self.overworld_bg)
         self.is_overworld = True
         self.overworld_bg.play(loops=-1)
         self.level_bg.stop()
-
 
     def run(self):
         if self.is_overworld:
@@ -55,8 +54,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    screen.fill('grey')
     game.run()
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(FPS)

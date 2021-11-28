@@ -1,5 +1,5 @@
 import pygame
-from src.constants import *
+from constants import *
 
 
 class UI:

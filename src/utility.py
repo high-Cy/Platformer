@@ -1,7 +1,7 @@
 import pygame
 from csv import reader
 from pathlib import Path
-from src.constants import *
+from constants import *
 
 
 def load_image(file_path, scale=None, width=None, height=None):

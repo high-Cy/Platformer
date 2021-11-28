@@ -1,7 +1,7 @@
 import pygame, sys, json
-from src.constants import *
-from src.levels import Level
-from src.overworld import Overworld
+from constants import *
+from levels import Level
+from overworld import Overworld
 
 
 class Game:

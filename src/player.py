@@ -1,8 +1,8 @@
 import pygame
-from src.constants import *
-from src.utility import *
-from src.sword import Sword
-from src.effect import Effect
+from constants import *
+from utility import *
+from sword import Sword
+from effect import Effect
 
 
 class Player(pygame.sprite.Sprite):

@@ -1,8 +1,8 @@
 import pygame
 from random import choice, randint
-from src.constants import *
-from src.utility import *
-from src.tiles import AnimatedTile, StaticTile
+from constants import *
+from utility import *
+from tiles import AnimatedTile, StaticTile
 
 path = 'assets/terrain/decoration'
 

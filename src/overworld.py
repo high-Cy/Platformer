@@ -1,9 +1,9 @@
 import pygame, sys
-from src.level_data import levels
-from src.utility import load_images
-from src.background import Sky
-from src.constants import *
-from src.ui import UI
+from level_data import levels
+from utility import load_images
+from background import Sky
+from constants import *
+from ui import UI
 
 
 class Node(pygame.sprite.Sprite):

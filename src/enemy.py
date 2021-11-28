@@ -1,7 +1,7 @@
 import pygame
 from random import randint
-from src.constants import *
-from src.utility import *
+from constants import *
+from utility import *
 
 
 class Enemy(pygame.sprite.Sprite):

@@ -1,12 +1,12 @@
 import pygame, sys
-from src.constants import *
-from src.utility import *
-from src.tiles import StaticTile, Tile, Palm, Item
-from src.player import Player
-from src.enemy import Slime, Worm, Jaw,Lopi, Candy
-from src.background import Sky, Water, Clouds
-from src.ui import UI
-from src.level_data import levels
+from constants import *
+from utility import *
+from tiles import StaticTile, Tile, Palm, Item
+from player import Player
+from enemy import Slime, Worm, Jaw, Lopi, Candy
+from background import Sky, Water, Clouds
+from ui import UI
+from level_data import levels
 
 path = 'assets/terrain'
 
@@ -74,7 +74,8 @@ class Level:
         self.end_screen_timer = None
         self.cleared_level = None
 
-    def create_tile_group(self, layout, type):
+    @staticmethod
+    def create_tile_group(layout, type):
         sprite_grp = pygame.sprite.Group()
 
         for row_index, row in enumerate(layout):
@@ -130,11 +131,11 @@ class Level:
                         if val == '2':
                             sprite = Worm(x, y)
                         if val == '3':
-                            sprite = Jaw(x,y)
+                            sprite = Jaw(x, y)
                         if val == '4':
-                            sprite = Lopi(x,y)
+                            sprite = Lopi(x, y)
                         if val == '5':
-                            sprite = Candy(x,y)
+                            sprite = Candy(x, y)
 
                     if type == 'constraints':
                         sprite = Tile(TILE_SIZE, (x, y))
@@ -171,7 +172,8 @@ class Level:
         if (player_x < SCREEN_WIDTH / 4) and direction_x < 0:
             self.player.speed = 0
             self.level_shift = WALK_SPEED
-        elif (player_x > SCREEN_WIDTH - (SCREEN_WIDTH / 4)) and direction_x > 0:
+        elif (player_x > SCREEN_WIDTH - (
+                SCREEN_WIDTH / 4)) and direction_x > 0:
             self.player.speed = 0
             self.level_shift = -WALK_SPEED
         else:
@@ -202,7 +204,8 @@ class Level:
     def check_win_lose(self):
         # timer starts when win or lose detected,
         if not self.end_screen_timer:
-            if self.player.health <= 0 or self.player.hitbox.top > SCREEN_HEIGHT:
+            if self.player.health <= 0 or \
+                    self.player.hitbox.top > SCREEN_HEIGHT:
                 if not self.muted:
                     self.death_sound.play()
                 self.cleared_level = False
@@ -220,7 +223,8 @@ class Level:
     def end_screen(self):
         # display end screen
         if self.end_screen_timer:
-            if (pygame.time.get_ticks() - self.end_screen_timer) >= ENDSCREEN_TIMER:
+            if (pygame.time.get_ticks() - self.end_screen_timer) \
+                    >= ENDSCREEN_TIMER:
                 if self.cleared_level:
                     self.create_overworld(self.current_level,
                                           self.new_max_level)
@@ -276,5 +280,5 @@ class Level:
                            self.enemy_sprites, self.muted)
 
         self.ui.display_mute()
-        self.ui.display_level(self.current_level+1)
+        self.ui.display_level(self.current_level + 1)
         self.end_screen()

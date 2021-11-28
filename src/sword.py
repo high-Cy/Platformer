@@ -1,6 +1,6 @@
 import pygame
-from src.constants import *
-from src.utility import *
+from constants import *
+from utility import *
 
 
 class Sword(pygame.sprite.Sprite):

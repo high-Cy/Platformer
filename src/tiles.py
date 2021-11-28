@@ -1,6 +1,6 @@
 import pygame
-from src.utility import *
-from src.constants import *
+from utility import *
+from constants import *
 
 
 class Tile(pygame.sprite.Sprite):

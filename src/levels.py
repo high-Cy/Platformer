@@ -10,9 +10,6 @@ from level_data import levels
 
 path = 'assets/terrain'
 
-'''ADD NUMBER OF ENEMIES KILLED AND DISPLAY AT END SCREEN
-ALSO DISPLAY SCORE NOOB'''
-
 
 class Level:
     def __init__(self, current_level, screen, create_overworld, level_bg):

@@ -16,27 +16,29 @@ class Game:
 
         # overworld
         self.overworld = Overworld(saved_lvl['current_level'], self.max_level, screen,
-                                   self.create_level, self.overworld_bg)
+                                   self.create_level, self.overworld_bg, False)
         self.level = None
         self.is_overworld = True
         self.overworld_bg.play(loops=-1)
 
-    def create_level(self, current_level):
+    def create_level(self, current_level, muted):
         self.level = Level(current_level, screen, self.create_overworld,
-                           self.level_bg)
+                           self.level_bg, muted)
         saved_lvl['current_level'] = current_level
         self.is_overworld = False
         self.overworld_bg.stop()
-        self.level_bg.play(loops=-1)
+        if not muted:
+            self.level_bg.play(loops=-1)
 
-    def create_overworld(self, current_level, new_max_level):
+    def create_overworld(self, current_level, new_max_level, muted):
         if new_max_level > self.max_level:
             self.max_level = new_max_level
             saved_lvl['max_level'] = new_max_level
         self.overworld = Overworld(current_level, self.max_level, screen,
-                                   self.create_level, self.overworld_bg)
+                                   self.create_level, self.overworld_bg, muted)
         self.is_overworld = True
-        self.overworld_bg.play(loops=-1)
+        if not muted:
+            self.overworld_bg.play(loops=-1)
         self.level_bg.stop()
 
     def run(self):

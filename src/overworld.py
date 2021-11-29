@@ -57,13 +57,14 @@ class OverworldIcon(pygame.sprite.Sprite):
 
 
 class Overworld:
-    def __init__(self, start_level, max_level, screen, create_level, overworld_bg):
+    def __init__(self, start_level, max_level, screen, create_level, overworld_bg, muted):
         self.screen = screen
         self.max_level = max_level
         self.current_level = start_level
         self.create_level = create_level
         self.overworld_bg = overworld_bg
-        self.bg_playing = True
+        self.muted = muted
+        self.bg_playing = not muted
 
         # UI
         self.ui = UI(self.screen)
@@ -129,7 +130,7 @@ class Overworld:
                 self.icon.sprite.flip = True
 
             elif keys[pygame.K_SPACE]:
-                self.create_level(self.current_level)
+                self.create_level(self.current_level, self.muted)
 
         if keys[pygame.K_ESCAPE]:
             pygame.quit()
@@ -137,10 +138,12 @@ class Overworld:
         if keys[pygame.K_m] and self.bg_playing:
             self.overworld_bg.stop()
             self.bg_playing = False
+            self.muted = True
 
         if keys[pygame.K_n] and not self.bg_playing:
             self.overworld_bg.play(loops=-1)
             self.bg_playing = True
+            self.muted = False
 
     def move_icon(self):
         if self.moving and self.move_direction:

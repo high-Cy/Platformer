@@ -13,7 +13,7 @@ sound_path = '../assets/sound/effects'
 
 
 class Level:
-    def __init__(self, current_level, screen, create_overworld, level_bg):
+    def __init__(self, current_level, screen, create_overworld, level_bg, muted):
         self.screen = screen
         self.level_shift = 0
         self.score = 0
@@ -28,7 +28,7 @@ class Level:
         # Audio
         self.level_bg = level_bg
         self.bg_playing = True
-        self.muted = False
+        self.muted = muted
         self.coin_sound = pygame.mixer.Sound(f'{sound_path}/coin.wav')
         self.potion_sound = pygame.mixer.Sound(
             f'{sound_path}/potion.wav')

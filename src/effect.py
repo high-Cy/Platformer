@@ -4,7 +4,7 @@ from utility import *
 
 
 class Effect(pygame.sprite.Sprite):
-    path = 'assets/player/dust_effect'
+    path = '../assets/player/dust_effect'
 
     def __init__(self, type, pos):
         super().__init__()

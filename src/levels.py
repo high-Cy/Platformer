@@ -8,7 +8,8 @@ from background import Sky, Water, Clouds
 from ui import UI
 from level_data import levels
 
-path = 'assets/terrain'
+path = '../assets/terrain'
+sound_path = '../assets/sound/effects'
 
 
 class Level:
@@ -28,11 +29,11 @@ class Level:
         self.level_bg = level_bg
         self.bg_playing = True
         self.muted = False
-        self.coin_sound = pygame.mixer.Sound('assets/sound/effects/coin.wav')
+        self.coin_sound = pygame.mixer.Sound(f'{sound_path}/coin.wav')
         self.potion_sound = pygame.mixer.Sound(
-            'assets/sound/effects/potion.wav')
-        self.death_sound = pygame.mixer.Sound('assets/sound/effects/oof.mp3')
-        self.win_sound = pygame.mixer.Sound('assets/sound/effects/win.wav')
+            f'{sound_path}/potion.wav')
+        self.death_sound = pygame.mixer.Sound(f'{sound_path}/oof.mp3')
+        self.win_sound = pygame.mixer.Sound(f'{sound_path}/win.wav')
         self.coin_sound.set_volume(SOUND_VOLUME)
         # self.potion_sound.set_volume(SOUND_VOLUME)
         self.win_sound.set_volume(SOUND_VOLUME)
@@ -108,17 +109,17 @@ class Level:
                         offset_x = 10
                         offset_y = 20
                         if val == '0':
-                            surf = pygame.image.load('assets/items/diamond.png')
+                            surf = pygame.image.load('../assets/items/diamond.png')
                             sprite = Item(TILE_SIZE, DIAMOND1,
                                           (x + offset_x, y + offset_y), surf)
                         if val == '1':
                             surf = pygame.image.load(
-                                'assets/items/diamond2.png')
+                                '../assets/items/diamond2.png')
                             sprite = Item(TILE_SIZE, DIAMOND2,
                                           (x + offset_x, y + offset_y), surf)
                         if val == '2':
                             surf = pygame.image.load(
-                                'assets/items/health_potion.png')
+                                '../assets/items/health_potion.png')
                             sprite = Item(TILE_SIZE, HEALTH_POTION,
                                           (x + offset_x, y + offset_y), surf)
 

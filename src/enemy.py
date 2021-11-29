@@ -5,13 +5,13 @@ from utility import *
 
 
 class Enemy(pygame.sprite.Sprite):
-    path = 'assets/enemy'
+    path = '../assets/enemy'
 
     def __init__(self, x, y):
         super().__init__()
 
         self.killed_sound = pygame.mixer.Sound(
-            'assets/sound/effects/enemy_die.wav')
+            '../assets/sound/effects/enemy_die.wav')
         self.killed_sound.set_volume(0.7)
 
         self.animation_dict = {}

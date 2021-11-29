@@ -1,6 +1,6 @@
 import pygame, sys
 from level_data import levels
-from utility import load_images
+from utility import import_folder
 from background import Sky
 from constants import *
 from ui import UI
@@ -9,7 +9,7 @@ from ui import UI
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, is_available, icon_speed, path):
         super().__init__()
-        self.animation_list = load_images(path)
+        self.animation_list = import_folder(path)
         self.frame_index = 0
         self.image = self.animation_list[self.frame_index]
         self.is_available = True if is_available else False
@@ -45,7 +45,7 @@ class OverworldIcon(pygame.sprite.Sprite):
         super().__init__()
         self.pos = pos
         self.image = pygame.transform.scale2x(
-            pygame.image.load('assets/player/player_idle/idle-1.png')).convert_alpha()
+            pygame.image.load('../assets/player/player_idle/idle-1.png')).convert_alpha()
         self.rect = self.image.get_rect(center=pos)
         self.flip = False
 

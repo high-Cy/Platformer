@@ -4,7 +4,7 @@ from constants import *
 from utility import *
 from tiles import AnimatedTile, StaticTile
 
-path = 'assets/terrain/decoration'
+path = '../assets/terrain/decoration'
 
 
 class Sky:

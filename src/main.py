@@ -8,9 +8,9 @@ class Game:
     def __init__(self, saved_lvl):
         self.max_level = saved_lvl['max_level']
 
-        self.level_bg = pygame.mixer.Sound('assets/sound/level_music.wav')
+        self.level_bg = pygame.mixer.Sound('../assets/sound/level_music.wav')
         self.overworld_bg = pygame.mixer.Sound(
-            'assets/sound/overworld_music.wav')
+            '../assets/sound/overworld_music.wav')
         self.level_bg.set_volume(SOUND_VOLUME)
         self.overworld_bg.set_volume(SOUND_VOLUME)
 
@@ -51,7 +51,7 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption(CAPTION)
 pygame.display.set_icon(
-    pygame.image.load('assets/player/player_jump/jump-1.png'))
+    pygame.image.load('../assets/player/player_jump/jump-1.png'))
 clock = pygame.time.Clock()
 
 saved_lvl = {

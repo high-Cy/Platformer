@@ -50,8 +50,6 @@ IDLE_COUNTER = 50
 
 # items
 HEALTH_POTION = 'Health'
-DOUBJUMP = 'Doub_Jump'
-APPLE = 'Apple'
 DIAMOND1 = 'Diamond1'
 DIAMOND2 = 'Diamond2'
 KEY = 'Key'

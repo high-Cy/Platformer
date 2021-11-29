@@ -6,15 +6,15 @@ class UI:
     def __init__(self, screen):
         self.screen = screen
 
-        self.font10 = pygame.font.Font('lemonmilk.otf', 10)
-        self.font30 = pygame.font.Font('lemonmilk.otf', 30)
-        self.font60 = pygame.font.Font('lemonmilk.otf', 60)
+        self.font10 = pygame.font.Font('../lemonmilk.otf', 10)
+        self.font30 = pygame.font.Font('../lemonmilk.otf', 30)
+        self.font60 = pygame.font.Font('../lemonmilk.otf', 60)
 
-        self.heart = pygame.image.load('assets/player/heart.png')
-        self.score = pygame.image.load('assets/items/diamond.png')
+        self.heart = pygame.image.load('../assets/player/heart.png')
+        self.score = pygame.image.load('../assets/items/diamond.png')
         self.score_rect = self.score.get_rect(topleft=(50,61))
 
-        self.mute_img = pygame.transform.scale(pygame.image.load('assets/sound/mute.png'), (24,24))
+        self.mute_img = pygame.transform.scale(pygame.image.load('../assets/sound/mute.png'), (24,24))
         self.mute_img.convert_alpha()
         self.mute_img_rect = self.mute_img.get_rect(topleft=(50, 680))
 

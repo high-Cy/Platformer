@@ -6,13 +6,13 @@ from effect import Effect
 
 
 class Player(pygame.sprite.Sprite):
-    path = 'assets/player'
+    path = '../assets/player'
 
     def __init__(self, pos):
         super().__init__()
         # audio
-        self.jump_sound = pygame.mixer.Sound('assets/sound/effects/jump.wav')
-        self.hit_sound = pygame.mixer.Sound('assets/sound/effects/hit.wav')
+        self.jump_sound = pygame.mixer.Sound('../assets/sound/effects/jump.wav')
+        self.hit_sound = pygame.mixer.Sound('../assets/sound/effects/hit.wav')
         self.jump_sound.set_volume(SOUND_VOLUME)
 
         # animations

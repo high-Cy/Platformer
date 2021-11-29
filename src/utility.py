@@ -1,7 +1,20 @@
 import pygame
 from csv import reader
 from pathlib import Path
+from os import walk
 from constants import *
+
+
+def import_folder(path):
+    surface_list = []
+
+    for _, __, image_files in walk(path):
+        for image in image_files:
+            full_path = path + '/' + image
+            image_surf = pygame.image.load(full_path).convert_alpha()
+            surface_list.append(image_surf)
+
+    return surface_list
 
 
 def load_image(file_path, scale=None, width=None, height=None):
@@ -79,7 +92,8 @@ def load_cut_graphics(path):
             x = col * TILE_SIZE
             y = row * TILE_SIZE
 
-            new_surf = pygame.Surface((TILE_SIZE, TILE_SIZE), flags=pygame.SRCALPHA)
+            new_surf = pygame.Surface((TILE_SIZE, TILE_SIZE),
+                                      flags=pygame.SRCALPHA)
             new_surf.blit(img, (0, 0),
                           pygame.Rect(x, y, TILE_SIZE, TILE_SIZE))
 
